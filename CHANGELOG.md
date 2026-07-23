@@ -37,4 +37,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   instead of a temp copy, so a converter that derives file-relative
   references (docinfo files, `imagesdir`, `include::`) from the input's
   directory resolves them the same way it would for a direct invocation.
+- `extraFixturesDirs`/`--fixtures` now recognizes a family directory that is
+  a symlink (previously silently skipped, since `Dirent#isDirectory()` is
+  false for symlinks) — lets a project expose an existing directory of
+  cases as a family without duplicating it.
 - Comparator now tolerates pretty-printed vs minified HTML.

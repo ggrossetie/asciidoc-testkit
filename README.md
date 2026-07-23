@@ -64,7 +64,10 @@ A project can also extend the corpus with its own cases, laid out the same
 way (`<family>/<name>.adoc`), for constructs the shared corpus doesn't cover
 (e.g. a backend-specific macro) — see `extraFixturesDirs` below or `--fixtures`
 in the CLI. A family/name pair that collides with the bundled corpus (or
-another extra directory) is an error, not a silent override.
+another extra directory) is an error, not a silent override. A family
+directory can be a symlink — useful when the cases already live elsewhere in
+the project (e.g. a directory of full example presentations) and shouldn't be
+duplicated.
 
 ## Usage (JS API)
 
