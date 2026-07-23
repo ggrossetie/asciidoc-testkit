@@ -1,0 +1,15 @@
+{
+  "name": "@asciidoc-testkit/core",
+  "version": "0.0.0",
+  "description": "Fixture format and comparator shared by the asciidoc-testkit JS library and CLI.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": "./src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "license": "MIT"
+}

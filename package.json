@@ -1,0 +1,16 @@
+{
+  "name": "asciidoc-testkit",
+  "private": true,
+  "description": "A toolkit for testing AsciiDoc converters/backends against a shared corpus of input/output fixtures, from JavaScript or any language via a native CLI.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm test --workspaces --if-present"
+  },
+  "license": "MIT"
+}

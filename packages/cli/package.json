@@ -1,0 +1,19 @@
+{
+  "name": "@asciidoc-testkit/cli",
+  "version": "0.0.0",
+  "description": "Native CLI to run the asciidoc-testkit fixture corpus against any converter (Ruby, Rust, Java, ...) invoked as an external command.",
+  "type": "module",
+  "bin": {
+    "asciidoc-testkit": "src/cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@asciidoc-testkit/core": "0.0.0"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "license": "MIT"
+}
