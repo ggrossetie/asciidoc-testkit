@@ -60,6 +60,37 @@ test('reports a throwing/rejecting converter as "error" instead of aborting the 
   }
 })
 
+test('runs project-supplied fixtures from extraFixturesDirs alongside the bundled corpus', async () => {
+  const expectedDir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-'))
+  const extraDir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-extra-'))
+  mkdirSync(join(expectedDir, 'olist'), { recursive: true })
+  mkdirSync(join(expectedDir, 'custom_macro'), { recursive: true })
+  mkdirSync(join(extraDir, 'custom_macro'), { recursive: true })
+  writeFileSync(join(expectedDir, 'olist', 'basic.html'), 'STEP 1\nSTEP 2\nSTEP 3')
+  writeFileSync(join(expectedDir, 'custom_macro', 'basic.html'), '<custom>target</custom>')
+  writeFileSync(join(extraDir, 'custom_macro', 'basic.adoc'), 'custom_macro::target[]')
+
+  const convert = (_input, { family, name }) =>
+    family === 'custom_macro' && name === 'basic' ? '<custom>target</custom>' : 'STEP 1\nSTEP 2\nSTEP 3'
+
+  try {
+    const results = await runFixtures({
+      expectedDir,
+      convert,
+      extension: 'html',
+      extraFixturesDirs: [extraDir],
+      filter: (fixture) => fixture.family === 'olist' || fixture.family === 'custom_macro'
+    })
+
+    const byKey = Object.fromEntries(results.map((r) => [`${r.family}/${r.name}`, r]))
+    assert.equal(byKey['olist/basic'].status, 'pass')
+    assert.equal(byKey['custom_macro/basic'].status, 'pass')
+  } finally {
+    rmSync(expectedDir, { recursive: true, force: true })
+    rmSync(extraDir, { recursive: true, force: true })
+  }
+})
+
 test('update mode overwrites existing expected files with the current actual output, and never adopts skipped cases', async () => {
   const expectedDir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-'))
   mkdirSync(join(expectedDir, 'olist'), { recursive: true })

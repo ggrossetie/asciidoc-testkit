@@ -100,6 +100,49 @@ test('--update overwrites the expected file with the current actual output inste
   }
 })
 
+test('list includes fixtures from --fixtures alongside the bundled corpus', async () => {
+  const scratch = scratchDir()
+  const extraDir = join(scratch, 'extra')
+  mkdirSync(join(extraDir, 'custom_macro'), { recursive: true })
+  writeFileSync(join(extraDir, 'custom_macro', 'basic.adoc'), 'custom_macro::target[]')
+
+  try {
+    const { exitCode, output } = await main(['list', '--fixtures', extraDir])
+    assert.equal(exitCode, 0)
+    assert.match(output, /^olist\/basic$/m)
+    assert.match(output, /^custom_macro\/basic$/m)
+  } finally {
+    rmSync(scratch, { recursive: true, force: true })
+  }
+})
+
+test('run picks up --fixtures and reports a collision with the bundled corpus as an error', async () => {
+  const scratch = scratchDir()
+  const expectedDir = join(scratch, 'expected')
+  const extraDir = join(scratch, 'extra')
+  mkdirSync(join(extraDir, 'olist'), { recursive: true })
+  writeFileSync(join(extraDir, 'olist', 'basic.adoc'), 'this shadows the bundled olist/basic case')
+
+  try {
+    const { exitCode, output } = await main([
+      'run',
+      '--expected',
+      expectedDir,
+      '--fixtures',
+      extraDir,
+      '--',
+      process.execPath,
+      '-e',
+      ''
+    ])
+
+    assert.equal(exitCode, 1)
+    assert.match(output, /duplicate fixture 'olist\/basic'/)
+  } finally {
+    rmSync(scratch, { recursive: true, force: true })
+  }
+})
+
 test('reports a non-zero-exit converter as ERROR', async () => {
   const scratch = scratchDir()
   const expectedDir = join(scratch, 'expected')

@@ -12,23 +12,27 @@ export async function main(argv) {
     return { exitCode: 1, output: parsed.error }
   }
 
-  if (parsed.subcommand === 'list') {
-    const output = listFixtures()
-      .map((fixture) => `${fixture.family}/${fixture.name}`)
-      .join('\n')
-    return { exitCode: 0, output }
+  try {
+    if (parsed.subcommand === 'list') {
+      const output = listFixtures({ extraDirs: parsed.extraFixturesDirs })
+        .map((fixture) => `${fixture.family}/${fixture.name}`)
+        .join('\n')
+      return { exitCode: 0, output }
+    }
+
+    const { expectedDir, extension, timeoutMs, update, extraFixturesDirs, command } = parsed
+
+    const convert = async (input) => {
+      const outcome = await spawnConvert(command, input, { timeoutMs })
+      if (outcome.timedOut) throw new Error(`timed out after ${timeoutMs}ms`)
+      if (outcome.exitCode !== 0)
+        throw new Error(outcome.stderr.trim() || `converter exited with code ${outcome.exitCode}`)
+      return outcome.actual
+    }
+
+    const results = await runFixtures({ expectedDir, convert, extension, update, extraFixturesDirs })
+    return { exitCode: exitCodeFor(results), output: formatResults(results) }
+  } catch (err) {
+    return { exitCode: 1, output: err.message }
   }
-
-  const { expectedDir, extension, timeoutMs, update, command } = parsed
-
-  const convert = async (input) => {
-    const outcome = await spawnConvert(command, input, { timeoutMs })
-    if (outcome.timedOut) throw new Error(`timed out after ${timeoutMs}ms`)
-    if (outcome.exitCode !== 0)
-      throw new Error(outcome.stderr.trim() || `converter exited with code ${outcome.exitCode}`)
-    return outcome.actual
-  }
-
-  const results = await runFixtures({ expectedDir, convert, extension, update })
-  return { exitCode: exitCodeFor(results), output: formatResults(results) }
 }

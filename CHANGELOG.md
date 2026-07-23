@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `extraFixturesDirs` option (JS API, `runFixtures`/`listFixtures`) and
+  `--fixtures <dir>` flag (CLI, repeatable, on both `run` and `list`) to merge
+  project-supplied fixtures into the bundled corpus. A `family/name` collision
+  with the bundled corpus or another extra directory is an error.
 - `asciidoc-testkit list` CLI subcommand to print every `<family>/<name>`
   case in the bundled fixture corpus, so consumers can see what's available
   to implement.

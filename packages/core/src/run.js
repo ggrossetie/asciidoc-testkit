@@ -22,17 +22,24 @@ import { listFixtures, readFixtureInput } from './fixtures.js'
 // - update: when true, don't compare — overwrite each matched case's expected
 //   file with the converter's current actual output (status "updated"),
 //   à la `jest --updateSnapshot`.
+// - extraFixturesDirs: additional directories of project-supplied fixtures,
+//   each laid out like the bundled corpus (<family>/<name>.adoc), merged in
+//   alongside it. Lets a project cover constructs the shared corpus doesn't
+//   have (e.g. a backend-specific macro) without forking this package. A
+//   family/name pair that collides with the bundled corpus or another extra
+//   dir throws rather than silently overriding.
 export async function runFixtures({
   expectedDir,
   convert,
   extension = 'html',
   compare = defaultCompare,
   filter,
-  update = false
+  update = false,
+  extraFixturesDirs = []
 }) {
   const results = []
 
-  for (const fixture of listFixtures()) {
+  for (const fixture of listFixtures({ extraDirs: extraFixturesDirs })) {
     if (filter && !filter(fixture)) continue
 
     const expectedPath = join(expectedDir, fixture.family, `${fixture.name}.${extension}`)

@@ -8,13 +8,14 @@ CLI (or be wrapped by a small script that behaves like one).
 ## Command shape
 
 ```
-asciidoc-testkit run --expected <dir> [--extension <ext>] [--timeout <ms>] [--update] -- <command...>
-asciidoc-testkit list
+asciidoc-testkit run --expected <dir> [--extension <ext>] [--timeout <ms>] [--update]
+                      [--fixtures <dir>]... -- <command...>
+asciidoc-testkit list [--fixtures <dir>]...
 ```
 
-`list` prints every `<family>/<name>` case in the bundled corpus, one per
-line — use it to see what's available to implement before creating expected
-files under `--expected`.
+`list` prints every `<family>/<name>` case in the corpus, one per line — use
+it to see what's available to implement before creating expected files under
+`--expected`.
 
 - `--expected <dir>` (required) — directory holding the caller's own expected
   output, mirroring the corpus layout: `<family>/<name>.<extension>`. Same
@@ -32,6 +33,13 @@ files under `--expected`.
   never silently grows a project's corpus. Adopting a new case is a deliberate
   act: create the (even empty) expected file yourself first, then `--update`
   it.
+- `--fixtures <dir>` (repeatable) — an additional directory of project-supplied
+  fixtures, laid out the same way as the bundled corpus (`<family>/<name>.adoc`),
+  merged in alongside it for both `run` and `list`. Use this to cover constructs
+  the shared corpus doesn't have (e.g. a backend-specific macro) without
+  forking this package. A `family/name` pair that collides with the bundled
+  corpus or another `--fixtures` directory is reported as an error, not
+  silently overridden.
 - `-- <command...>` — the converter invocation, given as argv (not a shell
   string — no shell is involved, so no quoting/escaping ambiguity and no
   injection risk from fixture content). Everything after `--` is passed
