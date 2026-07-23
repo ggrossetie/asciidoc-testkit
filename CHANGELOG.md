@@ -33,4 +33,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- CLI: `{input}` now resolves to the fixture's own `.adoc` file on disk
+  instead of a temp copy, so a converter that derives file-relative
+  references (docinfo files, `imagesdir`, `include::`) from the input's
+  directory resolves them the same way it would for a direct invocation.
 - Comparator now tolerates pretty-printed vs minified HTML.

@@ -4,21 +4,27 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 // Runs the converter once for a single case, per the CLI invocation
-// contract: `{input}`/`{output}` tokens in the command become temp file
-// paths when present; otherwise input goes over stdin and output is read
-// from stdout.
+// contract: `{input}`/`{output}` tokens in the command become file paths
+// when present; otherwise input goes over stdin and output is read from
+// stdout.
+//
+// When `sourcePath` is given and the command uses `{input}`, that path is
+// used as-is instead of a temp copy — so a converter that resolves
+// file-relative references (docinfo files, `imagesdir`, `include::`) from
+// the input's directory sees exactly what it would for a direct,
+// non-testkit invocation of that same file.
 //
 // Returns { exitCode, timedOut, stderr, actual }. `actual` is null when
 // timedOut or exitCode !== 0.
-export async function spawnConvert(command, input, { timeoutMs }) {
+export async function spawnConvert(command, input, { timeoutMs, sourcePath } = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-'))
-  const inputPath = join(dir, 'input.adoc')
   const outputPath = join(dir, 'output')
 
   const usesInputFile = command.includes('{input}')
   const usesOutputFile = command.includes('{output}')
 
-  if (usesInputFile) writeFileSync(inputPath, input)
+  const inputPath = usesInputFile ? (sourcePath ?? join(dir, 'input.adoc')) : null
+  if (usesInputFile && !sourcePath) writeFileSync(inputPath, input)
 
   const argv = command.map((token) => {
     if (token === '{input}') return inputPath
