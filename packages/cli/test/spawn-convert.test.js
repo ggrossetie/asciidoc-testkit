@@ -54,6 +54,33 @@ test('{input}/{output} mode: writes input to a file, reads output from a file', 
   }
 })
 
+test('{input} mode: uses sourcePath as-is when given, instead of writing a temp copy', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-cli-'))
+  const fixturePath = join(dir, 'my-fixture.adoc')
+  writeFileSync(fixturePath, 'irrelevant to the converter below')
+
+  const script = scriptPath(
+    dir,
+    'echo-input-path.mjs',
+    `
+    import { writeFileSync } from 'node:fs'
+    const [,, input, output] = process.argv
+    writeFileSync(output, input)
+  `
+  )
+
+  try {
+    const outcome = await spawnConvert([process.execPath, script, '{input}', '{output}'], 'irrelevant', {
+      timeoutMs: 2000,
+      sourcePath: fixturePath
+    })
+    assert.equal(outcome.exitCode, 0)
+    assert.equal(outcome.actual, fixturePath)
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+
 test('reports a non-zero exit code with captured stderr, and no actual output', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-cli-'))
   const script = scriptPath(

@@ -44,8 +44,11 @@ it to see what's available to implement before creating expected files under
   string — no shell is involved, so no quoting/escaping ambiguity and no
   injection risk from fixture content). Everything after `--` is passed
   through as-is, except for two recognized placeholder tokens:
-  - `{input}` — replaced with the path to a temp file containing the fixture's
-    AsciiDoc source for that case.
+  - `{input}` — replaced with the path to the fixture's own `.adoc` file on
+    disk (not a copy), so a converter that resolves file-relative references
+    from the input's directory — docinfo files, `imagesdir`, `include::` —
+    sees exactly what it would for a direct, non-testkit invocation of that
+    file.
   - `{output}` — replaced with the path to a (not-yet-existing) temp file the
     converter is expected to write its output to.
 

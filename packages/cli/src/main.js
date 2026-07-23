@@ -22,8 +22,8 @@ export async function main(argv) {
 
     const { expectedDir, extension, timeoutMs, update, extraFixturesDirs, command } = parsed
 
-    const convert = async (input) => {
-      const outcome = await spawnConvert(command, input, { timeoutMs })
+    const convert = async (input, fixture) => {
+      const outcome = await spawnConvert(command, input, { timeoutMs, sourcePath: fixture.path })
       if (outcome.timedOut) throw new Error(`timed out after ${timeoutMs}ms`)
       if (outcome.exitCode !== 0)
         throw new Error(outcome.stderr.trim() || `converter exited with code ${outcome.exitCode}`)

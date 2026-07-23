@@ -143,6 +143,51 @@ test('run picks up --fixtures and reports a collision with the bundled corpus as
   }
 })
 
+test("{input} resolves to the fixture's own file, so a converter can find sibling files next to it", async () => {
+  const scratch = scratchDir()
+  const extraDir = join(scratch, 'extra')
+  const familyDir = join(extraDir, 'withsibling')
+  mkdirSync(familyDir, { recursive: true })
+  writeFileSync(join(familyDir, 'basic.adoc'), 'ignored by the script below')
+  writeFileSync(join(familyDir, 'sibling.txt'), 'SIBLING CONTENT')
+
+  const expectedDir = join(scratch, 'expected')
+  mkdirSync(join(expectedDir, 'withsibling'), { recursive: true })
+  writeFileSync(join(expectedDir, 'withsibling', 'basic.html'), 'SIBLING CONTENT')
+
+  const script = join(scratch, 'read-sibling.mjs')
+  writeFileSync(
+    script,
+    `
+    import { readFileSync } from 'node:fs'
+    import { dirname, join } from 'node:path'
+    const [,, inputPath] = process.argv
+    process.stdout.write(readFileSync(join(dirname(inputPath), 'sibling.txt'), 'utf8'))
+  `
+  )
+
+  try {
+    const { exitCode, output } = await main([
+      'run',
+      '--expected',
+      expectedDir,
+      '--extension',
+      'html',
+      '--fixtures',
+      extraDir,
+      '--',
+      process.execPath,
+      script,
+      '{input}'
+    ])
+
+    assert.equal(exitCode, 0)
+    assert.match(output, /1 passed, 0 failed, 0 errored, 0 updated, \d+ skipped/)
+  } finally {
+    rmSync(scratch, { recursive: true, force: true })
+  }
+})
+
 test('reports a non-zero-exit converter as ERROR', async () => {
   const scratch = scratchDir()
   const expectedDir = join(scratch, 'expected')
