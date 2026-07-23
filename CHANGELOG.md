@@ -17,11 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - This changelog.
 - Native binary (SEA) build for the CLI.
 - `--update` flag to regenerate expected fixture output, snapshot-test style.
-- CLI (`@ggrossetie/asciidoc-testkit-cli`) implementing the invocation
-  contract: runs the fixture corpus against any converter invoked as an
-  external command.
-- Comparator and JS runner API (`@ggrossetie/asciidoc-testkit-core`), tolerant
-  of pretty-printed vs minified HTML.
+- CLI (`asciidoc-testkit-cli`) implementing the invocation contract: runs the
+  fixture corpus against any converter invoked as an external command.
+- Comparator and JS runner API (`asciidoc-testkit-core`), tolerant of
+  pretty-printed vs minified HTML.
 - Fixture format and the initial AsciiDoc input corpus.
 
 ### Fixed

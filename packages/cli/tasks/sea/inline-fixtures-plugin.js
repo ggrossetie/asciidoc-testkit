@@ -1,6 +1,6 @@
 // esbuild plugin used by the Single Executable Application (SEA) build.
 //
-// @ggrossetie/asciidoc-testkit-core's fixtures.js reads the bundled corpus from
+// asciidoc-testkit-core's fixtures.js reads the bundled corpus from
 // packages/core/fixtures/ at runtime via readdirSync/readFileSync, resolved
 // relative to its own file location. A SEA bundle is a single file injected
 // into the Node binary — there is no fixtures/ directory next to it at

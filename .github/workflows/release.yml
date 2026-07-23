@@ -48,7 +48,7 @@ jobs:
         run: |
           npm version ${{ inputs.version }} --workspace packages/core --no-git-tag-version
           npm version ${{ inputs.version }} --workspace packages/cli --no-git-tag-version
-          npm pkg set "dependencies.@ggrossetie/asciidoc-testkit-core=${{ inputs.version }}" --workspace packages/cli
+          npm pkg set "dependencies.asciidoc-testkit-core=${{ inputs.version }}" --workspace packages/cli
           npm install
 
       - name: Commit and tag

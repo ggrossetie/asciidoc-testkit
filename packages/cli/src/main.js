@@ -1,4 +1,4 @@
-import { runFixtures } from '@ggrossetie/asciidoc-testkit-core'
+import { runFixtures } from 'asciidoc-testkit-core'
 import { parseArgs } from './parse-args.js'
 import { exitCodeFor, formatResults } from './report.js'
 import { spawnConvert } from './spawn-convert.js'

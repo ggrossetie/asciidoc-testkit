@@ -1,5 +1,5 @@
 {
-  "name": "@ggrossetie/asciidoc-testkit-cli",
+  "name": "asciidoc-testkit-cli",
   "version": "0.0.0",
   "description": "CLI to run the asciidoc-testkit fixture corpus against any converter (Ruby, Rust, Java, ...) invoked as an external command. Also available as a standalone native binary.",
   "type": "module",
@@ -16,11 +16,8 @@
   },
   "homepage": "https://github.com/ggrossetie/asciidoc-testkit/tree/main/packages/cli#readme",
   "bugs": "https://github.com/ggrossetie/asciidoc-testkit/issues",
-  "publishConfig": {
-    "access": "public"
-  },
   "dependencies": {
-    "@ggrossetie/asciidoc-testkit-core": "0.0.0"
+    "asciidoc-testkit-core": "0.0.0"
   },
   "devDependencies": {
     "esbuild": "^0.28.0",
