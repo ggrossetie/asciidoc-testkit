@@ -1,6 +1,6 @@
 {
   "name": "asciidoc-testkit-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fixture format, comparator, and JS API to run the asciidoc-testkit corpus in-process against a JavaScript converter.",
   "type": "module",
   "main": "src/index.js",
