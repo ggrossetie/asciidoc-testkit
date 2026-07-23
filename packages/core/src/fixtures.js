@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs'
+import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -8,11 +8,24 @@ export function fixturesDir() {
   return FIXTURES_DIR
 }
 
+// Dirent#isDirectory() is false for symlinks (it reflects the entry's own
+// type, not its target) — resolved separately so a project can expose an
+// existing directory as a family via a symlink instead of duplicating it.
+function isFamilyDir(entry, parentDir) {
+  if (entry.isDirectory()) return true
+  if (!entry.isSymbolicLink()) return false
+  try {
+    return statSync(join(parentDir, entry.name)).isDirectory()
+  } catch {
+    return false
+  }
+}
+
 // Every case directly under dir, laid out as <family>/<name>.adoc, as
 // { family, name, path }, sorted by family then name.
 function listFixturesIn(dir) {
   const families = readdirSync(dir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
+    .filter((entry) => isFamilyDir(entry, dir))
     .map((entry) => entry.name)
     .sort()
 

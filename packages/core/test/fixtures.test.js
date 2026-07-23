@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
@@ -33,6 +33,23 @@ test('merges in project-supplied fixtures from extraDirs', () => {
     )
   } finally {
     rmSync(extraDir, { recursive: true, force: true })
+  }
+})
+
+test('an extra fixtures dir can expose a family through a symlink instead of a real directory', () => {
+  const extraDir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-extra-'))
+  const realDir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-real-'))
+  writeFileSync(join(realDir, 'basic.adoc'), 'custom_macro::target[]')
+  symlinkSync(realDir, join(extraDir, 'custom_macro'))
+
+  try {
+    const fixtures = listFixtures({ extraDirs: [extraDir] })
+    const custom = fixtures.find((f) => f.family === 'custom_macro' && f.name === 'basic')
+    assert.ok(custom, 'expected the symlinked family to be included')
+    assert.equal(readFixtureInput(custom), 'custom_macro::target[]')
+  } finally {
+    rmSync(extraDir, { recursive: true, force: true })
+    rmSync(realDir, { recursive: true, force: true })
   }
 })
 
