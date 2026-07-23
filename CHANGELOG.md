@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `<name>.config.json` sidecar file (with a `select` field: an array of CSS
+  selectors) to narrow a converter's actual HTML output to a fragment of it
+  before comparison — e.g. testing against full presentations/documents
+  rather than isolated snippets. Opt-in and additive: cases without the
+  sidecar behave exactly as before. Picked up automatically by both the JS
+  API (`runFixtures`) and the CLI, no passthrough plumbing needed.
 - `extraFixturesDirs` option (JS API, `runFixtures`/`listFixtures`) and
   `--fixtures <dir>` flag (CLI, repeatable, on both `run` and `list`) to merge
   project-supplied fixtures into the bundled corpus. A `family/name` collision

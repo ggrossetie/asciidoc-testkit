@@ -18,5 +18,8 @@
   "scripts": {
     "test": "node --test test/*.test.js"
   },
+  "dependencies": {
+    "parse5": "^8.0.1"
+  },
   "license": "MIT"
 }

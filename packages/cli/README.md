@@ -122,6 +122,8 @@ target (linux x64, linux arm64, macOS arm64, win x64).
 - No built-in tolerance for cosmetically-different-but-equivalent HTML
   (attribute order, `attr=""` vs bare `attr`, `style` value formatting) — the
   comparator is a pluggable option in the JS API precisely so this kind of
-  tolerance, or output-format-specific fragment extraction (HTML vs XML vs
-  plain-text...), can be layered on later without redesigning the contract.
-  For now these are reported as real differences.
+  tolerance can be layered on later without redesigning the contract. For now
+  these are reported as real differences.
+- HTML fragment extraction (a `<name>.config.json` sidecar with a `select`
+  CSS selector list, see the root README's "Fragment extraction" section) is
+  supported; extraction for other output formats (XML, plain text) is not.
