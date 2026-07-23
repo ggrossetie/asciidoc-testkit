@@ -45,9 +45,15 @@ jobs:
         run: node tasks/changelog.js release ${{ inputs.version }}
 
       - name: Bump package versions
+        # npm pkg set only edits package.json (no install/lockfile
+        # resolution), unlike `npm version`, which is why it's used for all
+        # three edits here — `npm version` reconciles package-lock.json as it
+        # runs, and doing that before cli's dependency pin is updated to
+        # match would send npm looking for the old, unpublished core version
+        # on the registry instead of linking the local workspace package.
         run: |
-          npm version ${{ inputs.version }} --workspace packages/core --no-git-tag-version
-          npm version ${{ inputs.version }} --workspace packages/cli --no-git-tag-version
+          npm pkg set version=${{ inputs.version }} --workspace packages/core
+          npm pkg set version=${{ inputs.version }} --workspace packages/cli
           npm pkg set "dependencies.asciidoc-testkit-core=${{ inputs.version }}" --workspace packages/cli
           npm install
 

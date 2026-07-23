@@ -14,6 +14,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   each fixture's `select` config and implements `readFixtureSelect`, so a
   fixture's actual output is narrowed to the configured fragment in the
   native binary the same way it is via the JS API/CLI.
+- Release workflow: the version-bump step now edits `package.json` via
+  `npm pkg set` instead of `npm version`, which was reconciling
+  `package-lock.json` before `packages/cli`'s pin on `asciidoc-testkit-core`
+  was updated to match — sending npm looking for the old, unpublished core
+  version on the registry (`ETARGET`) instead of linking the local workspace
+  package.
 
 ## [0.1.0] - 2026-07-23
 
