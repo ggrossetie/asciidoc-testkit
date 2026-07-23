@@ -1,0 +1,32 @@
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { runFixtures } from '../src/run.js'
+
+test('runs only fixtures with a matching expected file, and reports pass/fail/skipped', async () => {
+  const expectedDir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-'))
+  mkdirSync(join(expectedDir, 'olist'), { recursive: true })
+  writeFileSync(join(expectedDir, 'olist', 'basic.html'), 'STEP 1\nSTEP 2\nSTEP 3')
+  writeFileSync(join(expectedDir, 'olist', 'with-start.html'), 'expected this, converter will disagree')
+
+  const convert = (_input, { name }) => (name === 'basic' ? 'STEP 1\nSTEP 2\nSTEP 3' : 'whatever the converter actually produced')
+
+  try {
+    const results = await runFixtures({
+      expectedDir,
+      convert,
+      extension: 'html',
+      filter: (fixture) => fixture.family === 'olist'
+    })
+
+    const byName = Object.fromEntries(results.map((r) => [r.name, r]))
+    assert.equal(byName.basic.status, 'pass')
+    assert.equal(byName['with-start'].status, 'fail')
+    assert.ok(byName['with-start'].diff.length > 0)
+    assert.equal(byName['with-title'].status, 'skipped')
+  } finally {
+    rmSync(expectedDir, { recursive: true, force: true })
+  }
+})

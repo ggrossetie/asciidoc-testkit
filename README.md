@@ -56,11 +56,30 @@ The 244 cases across 37 families currently in the corpus were migrated from
 [asciidoctor-doctest](https://github.com/asciidoctor-contrib/asciidoctor-doctest)'s
 bundled AsciiDoc examples.
 
+## Usage (JS API)
+
+```js
+import { runFixtures } from '@asciidoc/testkit-core'
+
+const results = await runFixtures({
+  expectedDir: './test/fixtures', // your own expected-output tree
+  extension: 'html',
+  convert: (input, { family, name }) => myConverter.convert(input, { backend: 'revealjs' })
+})
+
+for (const { family, name, status, diff } of results) {
+  if (status === 'fail') console.log(`FAIL ${family}/${name}\n${diff}`)
+}
+```
+
+`compare(actual, expected)` and `normalize(text)` are also exported directly,
+for callers that want to run the comparison themselves.
+
 ## Status
 
-Corpus format defined and the initial AsciiDoc input corpus migrated. Still to
-do: the comparator, the JS runner API, and the CLI's external-converter
-invocation contract.
+Fixture format, corpus, comparator, and JS runner API (`runFixtures`) are in
+place with tests. Still to do: the CLI's external-converter invocation
+contract, and the native binary build.
 
 ## License
 
