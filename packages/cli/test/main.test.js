@@ -1,11 +1,11 @@
-import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { test } from 'node:test'
 import { main } from '../src/main.js'
 
-function scratchDir () {
+function scratchDir() {
   return mkdtempSync(join(tmpdir(), 'asciidoc-testkit-cli-'))
 }
 
@@ -24,16 +24,25 @@ test('runs the corpus over stdin/stdout and reports a mismatch as FAIL', async (
   writeFileSync(join(expectedDir, 'olist', 'with-start.html'), 'this will never match')
 
   const script = join(scratch, 'passthrough.mjs')
-  writeFileSync(script, `
+  writeFileSync(
+    script,
+    `
     let data = ''
     process.stdin.on('data', (c) => { data += c })
     process.stdin.on('end', () => { process.stdout.write(data) })
-  `)
+  `
+  )
 
   try {
     const { exitCode, output } = await main([
-      'run', '--expected', expectedDir, '--extension', 'html', '--',
-      process.execPath, script
+      'run',
+      '--expected',
+      expectedDir,
+      '--extension',
+      'html',
+      '--',
+      process.execPath,
+      script
     ])
 
     assert.equal(exitCode, 1)
@@ -51,16 +60,26 @@ test('--update overwrites the expected file with the current actual output inste
   writeFileSync(join(expectedDir, 'olist', 'with-start.html'), 'stale output from a previous run')
 
   const script = join(scratch, 'passthrough.mjs')
-  writeFileSync(script, `
+  writeFileSync(
+    script,
+    `
     let data = ''
     process.stdin.on('data', (c) => { data += c })
     process.stdin.on('end', () => { process.stdout.write(data) })
-  `)
+  `
+  )
 
   try {
     const { exitCode, output } = await main([
-      'run', '--expected', expectedDir, '--extension', 'html', '--update', '--',
-      process.execPath, script
+      'run',
+      '--expected',
+      expectedDir,
+      '--extension',
+      'html',
+      '--update',
+      '--',
+      process.execPath,
+      script
     ])
 
     assert.equal(exitCode, 0)
@@ -85,8 +104,14 @@ test('reports a non-zero-exit converter as ERROR', async () => {
 
   try {
     const { exitCode, output } = await main([
-      'run', '--expected', expectedDir, '--extension', 'html', '--',
-      process.execPath, script
+      'run',
+      '--expected',
+      expectedDir,
+      '--extension',
+      'html',
+      '--',
+      process.execPath,
+      script
     ])
 
     assert.equal(exitCode, 1)

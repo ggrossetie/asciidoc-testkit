@@ -1,6 +1,6 @@
 const STATUSES = ['pass', 'fail', 'error', 'updated', 'skipped']
 
-export function formatResults (results) {
+export function formatResults(results) {
   const lines = []
 
   for (const r of results) {
@@ -19,15 +19,20 @@ export function formatResults (results) {
   for (const r of results) counts[r.status]++
 
   lines.push('')
-  lines.push(`${counts.pass} passed, ${counts.fail} failed, ${counts.error} errored, ${counts.updated} updated, ${counts.skipped} skipped (${results.length} total)`)
+  lines.push(
+    `${counts.pass} passed, ${counts.fail} failed, ${counts.error} errored, ${counts.updated} updated, ${counts.skipped} skipped (${results.length} total)`
+  )
 
   return lines.join('\n')
 }
 
-export function exitCodeFor (results) {
+export function exitCodeFor(results) {
   return results.some((r) => r.status === 'fail' || r.status === 'error') ? 1 : 0
 }
 
-function indent (text) {
-  return text.split('\n').map((line) => `  ${line}`).join('\n')
+function indent(text) {
+  return text
+    .split('\n')
+    .map((line) => `  ${line}`)
+    .join('\n')
 }

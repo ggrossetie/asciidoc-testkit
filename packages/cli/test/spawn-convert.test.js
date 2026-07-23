@@ -1,11 +1,11 @@
-import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { test } from 'node:test'
 import { spawnConvert } from '../src/spawn-convert.js'
 
-function scriptPath (dir, name, content) {
+function scriptPath(dir, name, content) {
   const path = join(dir, name)
   writeFileSync(path, content)
   return path
@@ -13,11 +13,15 @@ function scriptPath (dir, name, content) {
 
 test('stdin/stdout mode: pipes input in, captures stdout as actual', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-cli-'))
-  const script = scriptPath(dir, 'uppercase.mjs', `
+  const script = scriptPath(
+    dir,
+    'uppercase.mjs',
+    `
     let data = ''
     process.stdin.on('data', (c) => { data += c })
     process.stdin.on('end', () => { process.stdout.write(data.toUpperCase()) })
-  `)
+  `
+  )
 
   try {
     const outcome = await spawnConvert([process.execPath, script], 'hello', { timeoutMs: 2000 })
@@ -31,11 +35,15 @@ test('stdin/stdout mode: pipes input in, captures stdout as actual', async () =>
 
 test('{input}/{output} mode: writes input to a file, reads output from a file', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-cli-'))
-  const script = scriptPath(dir, 'uppercase-files.mjs', `
+  const script = scriptPath(
+    dir,
+    'uppercase-files.mjs',
+    `
     import { readFileSync, writeFileSync } from 'node:fs'
     const [,, input, output] = process.argv
     writeFileSync(output, readFileSync(input, 'utf8').toUpperCase())
-  `)
+  `
+  )
 
   try {
     const outcome = await spawnConvert([process.execPath, script, '{input}', '{output}'], 'hello', { timeoutMs: 2000 })
@@ -48,10 +56,14 @@ test('{input}/{output} mode: writes input to a file, reads output from a file', 
 
 test('reports a non-zero exit code with captured stderr, and no actual output', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-cli-'))
-  const script = scriptPath(dir, 'fail.mjs', `
+  const script = scriptPath(
+    dir,
+    'fail.mjs',
+    `
     process.stderr.write('boom\\n')
     process.exit(3)
-  `)
+  `
+  )
 
   try {
     const outcome = await spawnConvert([process.execPath, script], 'hello', { timeoutMs: 2000 })

@@ -8,15 +8,15 @@
 // in a replacement fixtures.js backed by an embedded literal, keeping the
 // real fixtures.js untouched for normal (non-SEA) use.
 
-import { readFileSync, readdirSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
 const FIXTURES_MODULE = /packages[\\/]core[\\/]src[\\/]fixtures\.js$/
 
-export function inlineFixtures () {
+export function inlineFixtures() {
   return {
     name: 'inline-fixtures',
-    setup (build) {
+    setup(build) {
       build.onLoad({ filter: FIXTURES_MODULE }, (args) => {
         const fixturesDir = join(dirname(args.path), '..', 'fixtures')
         const data = {}
@@ -28,7 +28,9 @@ export function inlineFixtures () {
 
         for (const family of families) {
           const dir = join(fixturesDir, family)
-          for (const filename of readdirSync(dir).filter((f) => f.endsWith('.adoc')).sort()) {
+          for (const filename of readdirSync(dir)
+            .filter((f) => f.endsWith('.adoc'))
+            .sort()) {
             const name = filename.slice(0, -'.adoc'.length)
             data[`${family}/${name}`] = readFileSync(join(dir, filename), 'utf8')
           }

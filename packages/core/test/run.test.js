@@ -1,8 +1,8 @@
-import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { test } from 'node:test'
 import { runFixtures } from '../src/run.js'
 
 test('runs only fixtures with a matching expected file, and reports pass/fail/skipped', async () => {
@@ -11,7 +11,8 @@ test('runs only fixtures with a matching expected file, and reports pass/fail/sk
   writeFileSync(join(expectedDir, 'olist', 'basic.html'), 'STEP 1\nSTEP 2\nSTEP 3')
   writeFileSync(join(expectedDir, 'olist', 'with-start.html'), 'expected this, converter will disagree')
 
-  const convert = (_input, { name }) => (name === 'basic' ? 'STEP 1\nSTEP 2\nSTEP 3' : 'whatever the converter actually produced')
+  const convert = (_input, { name }) =>
+    name === 'basic' ? 'STEP 1\nSTEP 2\nSTEP 3' : 'whatever the converter actually produced'
 
   try {
     const results = await runFixtures({
@@ -77,7 +78,10 @@ test('update mode overwrites existing expected files with the current actual out
 
     const byName = Object.fromEntries(results.map((r) => [r.name, r]))
     assert.equal(byName.basic.status, 'updated')
-    assert.equal(readFileSync(join(expectedDir, 'olist', 'basic.html'), 'utf8'), 'fresh output from the current converter')
+    assert.equal(
+      readFileSync(join(expectedDir, 'olist', 'basic.html'), 'utf8'),
+      'fresh output from the current converter'
+    )
     assert.equal(byName['with-title'].status, 'skipped') // no expected file for it — not created
   } finally {
     rmSync(expectedDir, { recursive: true, force: true })

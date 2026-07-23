@@ -1,5 +1,5 @@
-import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { test } from 'node:test'
 import { compare, normalize } from '../src/compare.js'
 
 test('passes when content is identical', () => {

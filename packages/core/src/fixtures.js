@@ -1,15 +1,15 @@
-import { readFileSync, readdirSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
+import { readdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'fixtures')
 
-export function fixturesDir () {
+export function fixturesDir() {
   return FIXTURES_DIR
 }
 
 // Every case in the bundled corpus, as { family, name, path }, sorted by family then name.
-export function listFixtures () {
+export function listFixtures() {
   const families = readdirSync(FIXTURES_DIR, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
@@ -29,6 +29,6 @@ export function listFixtures () {
   return fixtures
 }
 
-export function readFixtureInput ({ path }) {
+export function readFixtureInput({ path }) {
   return readFileSync(path, 'utf8')
 }

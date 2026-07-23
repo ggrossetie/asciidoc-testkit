@@ -1,9 +1,21 @@
-import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { test } from 'node:test'
 import { parseArgs } from '../src/parse-args.js'
 
 test('parses a full valid invocation', () => {
-  const result = parseArgs(['run', '--expected', 'test/fixtures', '--extension', 'json', '--timeout', '5000', '--', 'my-converter', '{input}', '{output}'])
+  const result = parseArgs([
+    'run',
+    '--expected',
+    'test/fixtures',
+    '--extension',
+    'json',
+    '--timeout',
+    '5000',
+    '--',
+    'my-converter',
+    '{input}',
+    '{output}'
+  ])
   assert.deepEqual(result, {
     expectedDir: 'test/fixtures',
     extension: 'json',

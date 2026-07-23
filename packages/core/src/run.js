@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { listFixtures, readFixtureInput } from './fixtures.js'
 import { compare as defaultCompare } from './compare.js'
+import { listFixtures, readFixtureInput } from './fixtures.js'
 
 // Runs the bundled fixture corpus against a caller-supplied converter.
 //
@@ -22,7 +22,14 @@ import { compare as defaultCompare } from './compare.js'
 // - update: when true, don't compare — overwrite each matched case's expected
 //   file with the converter's current actual output (status "updated"),
 //   à la `jest --updateSnapshot`.
-export async function runFixtures ({ expectedDir, convert, extension = 'html', compare = defaultCompare, filter, update = false }) {
+export async function runFixtures({
+  expectedDir,
+  convert,
+  extension = 'html',
+  compare = defaultCompare,
+  filter,
+  update = false
+}) {
   const results = []
 
   for (const fixture of listFixtures()) {

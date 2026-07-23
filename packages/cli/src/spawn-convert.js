@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { mkdtempSync, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -10,7 +10,7 @@ import { join } from 'node:path'
 //
 // Returns { exitCode, timedOut, stderr, actual }. `actual` is null when
 // timedOut or exitCode !== 0.
-export async function spawnConvert (command, input, { timeoutMs }) {
+export async function spawnConvert(command, input, { timeoutMs }) {
   const dir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-'))
   const inputPath = join(dir, 'input.adoc')
   const outputPath = join(dir, 'output')
@@ -33,9 +33,7 @@ export async function spawnConvert (command, input, { timeoutMs }) {
       return { exitCode, timedOut, stderr, actual: null }
     }
 
-    const actual = usesOutputFile
-      ? (existsSync(outputPath) ? readFileSync(outputPath, 'utf8') : '')
-      : stdout
+    const actual = usesOutputFile ? (existsSync(outputPath) ? readFileSync(outputPath, 'utf8') : '') : stdout
 
     return { exitCode, timedOut: false, stderr, actual }
   } finally {
@@ -43,7 +41,7 @@ export async function spawnConvert (command, input, { timeoutMs }) {
   }
 }
 
-function spawnOnce (argv, stdinContent, timeoutMs) {
+function spawnOnce(argv, stdinContent, timeoutMs) {
   return new Promise((resolve) => {
     const child = spawn(argv[0], argv.slice(1), { stdio: ['pipe', 'pipe', 'pipe'] })
 
@@ -56,8 +54,12 @@ function spawnOnce (argv, stdinContent, timeoutMs) {
       child.kill('SIGKILL')
     }, timeoutMs)
 
-    child.stdout.on('data', (chunk) => { stdout += chunk })
-    child.stderr.on('data', (chunk) => { stderr += chunk })
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk
+    })
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk
+    })
 
     child.stdin.end(stdinContent ?? undefined)
 

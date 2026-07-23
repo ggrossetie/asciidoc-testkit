@@ -1,14 +1,14 @@
 const DEFAULT_EXTENSION = 'html'
 const DEFAULT_TIMEOUT_MS = 10000
 
-export function usage () {
+export function usage() {
   return 'Usage: asciidoc-testkit run --expected <dir> [--extension <ext>] [--timeout <ms>] [--update] -- <command...>'
 }
 
 // Parses argv (without the node/script prefix) per the CLI invocation
 // contract. Returns either { expectedDir, extension, timeoutMs, update, command }
 // or { error }.
-export function parseArgs (argv) {
+export function parseArgs(argv) {
   if (argv[0] !== 'run') {
     return { error: `Unknown or missing subcommand.\n${usage()}` }
   }

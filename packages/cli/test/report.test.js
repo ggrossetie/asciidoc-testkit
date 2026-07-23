@@ -1,6 +1,6 @@
-import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { formatResults, exitCodeFor } from '../src/report.js'
+import { test } from 'node:test'
+import { exitCodeFor, formatResults } from '../src/report.js'
 
 const sample = [
   { family: 'olist', name: 'basic', status: 'pass', diff: null, message: null },

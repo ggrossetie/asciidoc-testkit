@@ -8,7 +8,7 @@
 // `<em>Hello</em> <strong>World</strong>`) is left untouched, since inline
 // HTML gives it visual meaning; so is any whitespace inside a text run, such
 // as the deliberate line breaks in a verse/`<pre>` block.
-export function normalize (text) {
+export function normalize(text) {
   return text
     .replace(/>\s*\n\s*</g, '><') // drop insignificant multi-line whitespace between tags
     .replace(/></g, '>\n<') // one tag per line, for a readable diff
@@ -21,7 +21,7 @@ export function normalize (text) {
 // Compares actual output against expected output. Returns { pass, diff }:
 // diff is null when pass is true, otherwise a unified-ish, line-based diff
 // (- expected line, + actual line, unmarked = common line).
-export function compare (actual, expected, { normalize: normalizeFn = normalize } = {}) {
+export function compare(actual, expected, { normalize: normalizeFn = normalize } = {}) {
   const normalizedActual = normalizeFn(actual)
   const normalizedExpected = normalizeFn(expected)
 
@@ -31,7 +31,7 @@ export function compare (actual, expected, { normalize: normalizeFn = normalize 
   return { pass: false, diff: diffLines(normalizedExpected, normalizedActual) }
 }
 
-function diffLines (expectedText, actualText) {
+function diffLines(expectedText, actualText) {
   const expected = expectedText.split('\n')
   const actual = actualText.split('\n')
   const common = longestCommonSubsequence(expected, actual)
@@ -41,8 +41,13 @@ function diffLines (expectedText, actualText) {
   let j = 0
   let k = 0
   while (i < expected.length || j < actual.length) {
-    if (i < expected.length && j < actual.length && k < common.length &&
-        expected[i] === common[k] && actual[j] === common[k]) {
+    if (
+      i < expected.length &&
+      j < actual.length &&
+      k < common.length &&
+      expected[i] === common[k] &&
+      actual[j] === common[k]
+    ) {
       out.push(`  ${expected[i]}`)
       i++
       j++
@@ -60,7 +65,7 @@ function diffLines (expectedText, actualText) {
 
 // Standard dynamic-programming LCS, kept to plain arrays since fixture
 // outputs are small (at most a few hundred lines).
-function longestCommonSubsequence (a, b) {
+function longestCommonSubsequence(a, b) {
   const m = a.length
   const n = b.length
   const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0))
