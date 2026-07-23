@@ -1,5 +1,5 @@
 {
-  "name": "@asciidoc-testkit/core",
+  "name": "@asciidoc/testkit-core",
   "version": "0.0.0",
   "description": "Fixture format, comparator, and JS API to run the asciidoc-testkit corpus in-process against a JavaScript converter.",
   "type": "module",
