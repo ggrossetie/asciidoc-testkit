@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- CI workflow now also runs on direct pushes to `main`, not just pull
+  requests — commits landed directly on `main` were previously never
+  linted or tested.
 - Release workflow: bumped `actions/upload-artifact` (v4 → v7) and
   `actions/download-artifact` (v4 → v8), clearing a Node.js 20 deprecation
   warning on the runners.
