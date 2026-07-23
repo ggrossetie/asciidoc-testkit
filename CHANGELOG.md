@@ -12,10 +12,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `actions/download-artifact` (v4 → v8), clearing a Node.js 20 deprecation
   warning on the runners.
 
+### Fixed
+
+- `tasks/changelog.js`: release notes no longer print an empty `## Summary`
+  / `_No summary provided._` section when a release has no summary
+  paragraph — the section is omitted entirely instead.
+
 ## [0.1.1] - 2026-07-23
 
 ### Fixed
 
+- CLI: `{input}` now resolves to the fixture's own `.adoc` file on disk
+  instead of a temp copy, so a converter that derives file-relative
+  references (docinfo files, `imagesdir`, `include::`) from the input's
+  directory resolves them the same way it would for a direct invocation.
+- `extraFixturesDirs`/`--fixtures` now recognizes a family directory that is
+  a symlink (previously silently skipped, since `Dirent#isDirectory()` is
+  false for symlinks) — lets a project expose an existing directory of
+  cases as a family without duplicating it.
+- Comparator now tolerates pretty-printed vs minified HTML.
 - Native binary (SEA) build: fixed a build failure (`No matching export ...
   for import "readFixtureSelect"`) introduced by the `.config.json` sidecar
   support — the SEA build's fixture-inlining esbuild plugin now also embeds
@@ -28,8 +43,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   was updated to match — sending npm looking for the old, unpublished core
   version on the registry (`ETARGET`) instead of linking the local workspace
   package.
-
-## [0.1.0] - 2026-07-23
 
 ### Added
 
@@ -61,15 +74,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Comparator and JS runner API (`asciidoc-testkit-core`), tolerant of
   pretty-printed vs minified HTML.
 - Fixture format and the initial AsciiDoc input corpus.
-
-### Fixed
-
-- CLI: `{input}` now resolves to the fixture's own `.adoc` file on disk
-  instead of a temp copy, so a converter that derives file-relative
-  references (docinfo files, `imagesdir`, `include::`) from the input's
-  directory resolves them the same way it would for a direct invocation.
-- `extraFixturesDirs`/`--fixtures` now recognizes a family directory that is
-  a symlink (previously silently skipped, since `Dirent#isDirectory()` is
-  false for symlinks) — lets a project expose an existing directory of
-  cases as a family without duplicating it.
-- Comparator now tolerates pretty-printed vs minified HTML.

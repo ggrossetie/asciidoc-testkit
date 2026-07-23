@@ -38,11 +38,11 @@ export function formatReleaseNotes({ summary, date, author, previousTag, current
   const logs = previousTag
     ? `[full diff](https://github.com/${repository}/compare/${previousTag}...${currentTag})`
     : `[full diff](https://github.com/${repository}/commits/${currentTag})`
-  const lines = [
-    '## Summary',
-    '',
-    summary || '_No summary provided._',
-    '',
+  const lines = []
+  if (summary) {
+    lines.push('## Summary', '', summary, '')
+  }
+  lines.push(
     '## Release meta',
     '',
     `Released on: ${date}`,
@@ -54,7 +54,7 @@ export function formatReleaseNotes({ summary, date, author, previousTag, current
     '## Changelog',
     '',
     changelog || '_No changes recorded._'
-  ]
+  )
   if (footer) {
     lines.push('', footer)
   }

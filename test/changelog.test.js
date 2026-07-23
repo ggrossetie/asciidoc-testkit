@@ -36,6 +36,19 @@ test('formatReleaseNotes renders a full diff link when a previous tag exists', (
   assert.match(notes, /Released by: ggrossetie/)
 })
 
+test('formatReleaseNotes omits the Summary section entirely when there is no summary', () => {
+  const notes = formatReleaseNotes({
+    summary: '',
+    date: '2026-07-23',
+    author: 'ggrossetie',
+    previousTag: 'v1.2.2',
+    currentTag: 'v1.2.3',
+    changelog: '### Added\n\n- Thing.'
+  })
+  assert.doesNotMatch(notes, /## Summary/)
+  assert.match(notes, /^## Release meta/)
+})
+
 test('formatReleaseNotes falls back to a commits link when there is no previous tag', () => {
   const notes = formatReleaseNotes({
     summary: 'Summary.',
