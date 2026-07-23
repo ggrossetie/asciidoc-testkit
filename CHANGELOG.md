@@ -10,8 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Release workflow: changelog automation (`tasks/changelog.js`), native binary
   builds for macOS (amd64/arm64), Windows (amd64), and Linux (amd64/arm64)
-  attached to the GitHub release, and npm publishing (`testing` dist-tag for
-  `-alpha`/`-beta`/`-rc` prereleases, `latest` otherwise).
+  attached to the GitHub release, and npm publishing via OIDC trusted
+  publishing (no long-lived token) to the `testing` dist-tag for
+  `-alpha`/`-beta`/`-rc` prereleases, `latest` otherwise.
 - Biome for linting and formatting (`npm run lint`, `npm run format`).
 - GitHub Actions workflow to lint and run the test suite on pull requests targeting `main`.
 - This changelog.
