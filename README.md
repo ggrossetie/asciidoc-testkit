@@ -75,11 +75,25 @@ for (const { family, name, status, diff } of results) {
 `compare(actual, expected)` and `normalize(text)` are also exported directly,
 for callers that want to run the comparison themselves.
 
+## Usage (CLI)
+
+The CLI spawns the converter under test as an external process, once per
+fixture case, and wires up input/output via stdin/stdout or temp files —
+see [`packages/cli/README.md`](packages/cli/README.md) for the full
+invocation contract. No shared runtime or framework required on the
+converter's side.
+
+```sh
+asciidoc-testkit run --expected test/fixtures --extension html -- \
+  bundle exec asciidoctor -b revealjs -o - -
+```
+
 ## Status
 
 Fixture format, corpus, comparator, and JS runner API (`runFixtures`) are in
-place with tests. Still to do: the CLI's external-converter invocation
-contract, and the native binary build.
+place with tests. The CLI's invocation contract is defined (see
+`packages/cli/README.md`) but not implemented yet — still to do: the actual
+process-spawning CLI and the native binary build.
 
 ## License
 
