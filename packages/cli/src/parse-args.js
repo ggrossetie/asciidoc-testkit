@@ -2,13 +2,21 @@ const DEFAULT_EXTENSION = 'html'
 const DEFAULT_TIMEOUT_MS = 10000
 
 export function usage() {
-  return 'Usage: asciidoc-testkit run --expected <dir> [--extension <ext>] [--timeout <ms>] [--update] -- <command...>'
+  return (
+    'Usage: asciidoc-testkit run --expected <dir> [--extension <ext>] [--timeout <ms>] [--update] -- <command...>\n' +
+    '       asciidoc-testkit list'
+  )
 }
 
 // Parses argv (without the node/script prefix) per the CLI invocation
-// contract. Returns either { expectedDir, extension, timeoutMs, update, command }
+// contract. Returns either { subcommand: 'list' },
+// { subcommand: 'run', expectedDir, extension, timeoutMs, update, command },
 // or { error }.
 export function parseArgs(argv) {
+  if (argv[0] === 'list') {
+    return { subcommand: 'list' }
+  }
+
   if (argv[0] !== 'run') {
     return { error: `Unknown or missing subcommand.\n${usage()}` }
   }
@@ -52,5 +60,5 @@ export function parseArgs(argv) {
     return { error: `Invalid --timeout value.\n${usage()}` }
   }
 
-  return { expectedDir, extension, timeoutMs, update, command }
+  return { subcommand: 'run', expectedDir, extension, timeoutMs, update, command }
 }

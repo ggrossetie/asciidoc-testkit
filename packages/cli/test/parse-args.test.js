@@ -17,12 +17,17 @@ test('parses a full valid invocation', () => {
     '{output}'
   ])
   assert.deepEqual(result, {
+    subcommand: 'run',
     expectedDir: 'test/fixtures',
     extension: 'json',
     timeoutMs: 5000,
     update: false,
     command: ['my-converter', '{input}', '{output}']
   })
+})
+
+test('parses the list subcommand', () => {
+  assert.deepEqual(parseArgs(['list']), { subcommand: 'list' })
 })
 
 test('applies default extension, timeout, and update when omitted', () => {

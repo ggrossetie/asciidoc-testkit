@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `asciidoc-testkit list` CLI subcommand to print every `<family>/<name>`
+  case in the bundled fixture corpus, so consumers can see what's available
+  to implement.
 - Release workflow: changelog automation (`tasks/changelog.js`), native binary
   builds for macOS (amd64/arm64), Windows (amd64), and Linux (amd64/arm64)
   attached to the GitHub release, and npm publishing via OIDC trusted

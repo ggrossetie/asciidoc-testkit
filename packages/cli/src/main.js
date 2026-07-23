@@ -1,4 +1,4 @@
-import { runFixtures } from 'asciidoc-testkit-core'
+import { listFixtures, runFixtures } from 'asciidoc-testkit-core'
 import { parseArgs } from './parse-args.js'
 import { exitCodeFor, formatResults } from './report.js'
 import { spawnConvert } from './spawn-convert.js'
@@ -10,6 +10,13 @@ export async function main(argv) {
   const parsed = parseArgs(argv)
   if (parsed.error) {
     return { exitCode: 1, output: parsed.error }
+  }
+
+  if (parsed.subcommand === 'list') {
+    const output = listFixtures()
+      .map((fixture) => `${fixture.family}/${fixture.name}`)
+      .join('\n')
+    return { exitCode: 0, output }
   }
 
   const { expectedDir, extension, timeoutMs, update, command } = parsed
