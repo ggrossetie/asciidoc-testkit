@@ -49,7 +49,16 @@ export async function spawnConvert(command, input, { timeoutMs, sourcePath } = {
 
 function spawnOnce(argv, stdinContent, timeoutMs) {
   return new Promise((resolve) => {
-    const child = spawn(argv[0], argv.slice(1), { stdio: ['pipe', 'pipe', 'pipe'] })
+    // On Windows, a shim like `bundle` resolves to `bundle.bat`/`.cmd`, which
+    // spawn() cannot execute directly (ENOENT) — only cmd.exe knows how to
+    // run a batch file. Scoped to win32 only: fixture content never reaches
+    // this command line either way (it goes over stdin or a temp/source
+    // file path, per the {input}/{output} contract above), so there's
+    // nothing here for a shell to misinterpret even on Windows.
+    const child = spawn(argv[0], argv.slice(1), {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      shell: process.platform === 'win32'
+    })
 
     let stdout = ''
     let stderr = ''

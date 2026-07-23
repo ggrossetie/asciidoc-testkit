@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- CLI: the converter command now spawns correctly on Windows. A shim like
+  `bundle` resolves to `bundle.bat`/`.cmd` there, which `child_process.spawn`
+  cannot execute directly without a shell (`spawn bundle ENOENT`) — scoped to
+  `win32` only, since fixture content never reaches the command line on any
+  platform (it goes over stdin or a temp/source file path).
+
 ### Changed
 
 - CI workflow now also runs on direct pushes to `main`, not just pull
