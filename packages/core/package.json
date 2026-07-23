@@ -1,7 +1,7 @@
 {
   "name": "@asciidoc-testkit/core",
   "version": "0.0.0",
-  "description": "Fixture format and comparator shared by the asciidoc-testkit JS library and CLI.",
+  "description": "Fixture format, comparator, and JS API to run the asciidoc-testkit corpus in-process against a JavaScript converter.",
   "type": "module",
   "main": "src/index.js",
   "exports": "./src/index.js",

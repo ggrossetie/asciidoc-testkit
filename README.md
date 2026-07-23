@@ -13,13 +13,15 @@ same test framework.
 
 ## Packages
 
-- [`packages/core`](packages/core) — fixture format and comparator, shared by
-  the two packages below.
-- [`packages/js-lib`](packages/js-lib) (`asciidoc-testkit` on npm) — run the
-  fixture corpus in-process against a JavaScript converter function.
-- [`packages/cli`](packages/cli) (`@asciidoc-testkit/cli`) — a native binary
-  that runs the fixture corpus against any converter invoked as an external
-  command, for use from Ruby, Rust, Java, or any other language.
+Same split as `asciidoctor.js`/`asciidoctor`: one JS library, one CLI.
+
+- [`packages/core`](packages/core) (`@asciidoc-testkit/core` on npm) — fixture
+  format, comparator, and the JS API to run the corpus in-process against a
+  JavaScript converter function.
+- [`packages/cli`](packages/cli) (`asciidoc-testkit` on npm) — runs the
+  fixture corpus against any converter invoked as an external command, for use
+  from Ruby, Rust, Java, or any other language. Ships as a native binary; the
+  npm package exists mainly for JS-based extension of the CLI itself.
 
 ## Status
 
