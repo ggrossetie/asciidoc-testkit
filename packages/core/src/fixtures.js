@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -72,4 +72,27 @@ export function listFixtures({ extraDirs = [] } = {}) {
 
 export function readFixtureInput({ path }) {
   return readFileSync(path, 'utf8')
+}
+
+// Reads a fixture's optional `<name>.config.json` sidecar (next to its
+// `.adoc` file) and returns its `select` field: an array of CSS selectors
+// applied to the converter's actual output before comparison, for cases
+// where the expected output is a fragment of a larger page rather than the
+// whole thing. Returns null when the sidecar doesn't exist, or when it
+// exists but has no `select` field — the common case, meaning "compare the
+// raw actual output, as today". A `select` field that is present but
+// malformed (empty/non-string entries) throws — that's a project
+// configuration mistake, not a per-case converter failure. The sidecar is a
+// general-purpose `.config.json` (not a `.select.json`) so it has room for
+// unrelated per-case options later without another sidecar file.
+export function readFixtureSelect({ path }) {
+  const configPath = path.replace(/\.adoc$/, '.config.json')
+  if (!existsSync(configPath)) return null
+
+  const { select } = JSON.parse(readFileSync(configPath, 'utf8'))
+  if (select === undefined) return null
+  if (!Array.isArray(select) || select.length === 0 || !select.every((s) => typeof s === 'string')) {
+    throw new Error(`invalid ${configPath}: 'select' must be a non-empty array of CSS selector strings`)
+  }
+  return select
 }

@@ -1,7 +1,8 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { compare as defaultCompare } from './compare.js'
-import { listFixtures, readFixtureInput } from './fixtures.js'
+import { listFixtures, readFixtureInput, readFixtureSelect } from './fixtures.js'
+import { extractFragment } from './select.js'
 
 // Runs the bundled fixture corpus against a caller-supplied converter.
 //
@@ -28,6 +29,10 @@ import { listFixtures, readFixtureInput } from './fixtures.js'
 //   have (e.g. a backend-specific macro) without forking this package. A
 //   family/name pair that collides with the bundled corpus or another extra
 //   dir throws rather than silently overriding.
+//
+// A fixture with a <name>.config.json sidecar has its actual output narrowed
+// to the matched CSS selector fragment before either the compare or update
+// path runs — see readFixtureSelect. Absence of the sidecar is a no-op.
 export async function runFixtures({
   expectedDir,
   convert,
@@ -57,6 +62,9 @@ export async function runFixtures({
       results.push({ ...fixture, status: 'error', diff: null, message: err.message })
       continue
     }
+
+    const selectors = readFixtureSelect(fixture)
+    if (selectors) actual = extractFragment(actual, selectors)
 
     if (update) {
       writeFileSync(expectedPath, actual)

@@ -69,6 +69,32 @@ directory can be a symlink — useful when the cases already live elsewhere in
 the project (e.g. a directory of full example presentations) and shouldn't be
 duplicated.
 
+### Fragment extraction
+
+A case can optionally narrow the converter's actual output to a fragment of
+it before comparison, via a sibling `<name>.config.json` file next to
+`<name>.adoc` (a general-purpose per-case config file, so it has room for
+unrelated options later without another sidecar):
+
+```json
+{ "select": ["div.slides", "head style:last-of-type"] }
+```
+
+`select` is an array of CSS selectors (matched as a union, in document order,
+deduplicated — so declaration order in the array doesn't matter). This is for
+cases like a full presentation or document where the expected output is only
+a slice of the page (e.g. the slides container), not the whole thing. Absence
+of the sidecar is a no-op — the raw actual output is compared as-is, exactly
+as today.
+
+The selector support is intentionally a small subset of CSS rather than a
+full implementation: type selectors, `*`, `.class`, `#id`,
+`[attr]`/`[attr=value]`/`[attr="value"]`, the descendant and child (`>`)
+combinators, and the structural pseudo-classes `:first-child`/`:last-child`/
+`:first-of-type`/`:last-of-type`. Not supported: `:nth-child()`, `:not()`,
+sibling combinators (`+`/`~`), attribute operators other than exact match,
+and case-insensitive attribute matching.
+
 ## Usage (JS API)
 
 ```js
@@ -126,11 +152,13 @@ Fixture format, corpus, comparator, JS runner API (`runFixtures`), the CLI
 tested (31 tests across both packages), and validated end-to-end against the
 real Ruby asciidoctor-reveal.js converter.
 
-Deliberately deferred, to keep validated with a real use case before
-generalizing: tolerating cosmetically-different-but-equivalent output
-(attribute order, `style` value formatting, ...) and per-output-format
-fragment extraction. The comparator is already a pluggable option precisely
-so these can be layered on later without a contract change.
+HTML fragment extraction (the `.config.json` sidecar, see above) is also
+implemented. Deliberately deferred, to keep validated with a real use case
+before generalizing: tolerating cosmetically-different-but-equivalent output
+(attribute order, `style` value formatting, ...) and fragment extraction for
+non-HTML output formats (XML, plain text). The comparator is already a
+pluggable option precisely so these can be layered on later without a
+contract change.
 
 ## License
 

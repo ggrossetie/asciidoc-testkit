@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
-import { listFixtures, readFixtureInput } from '../src/fixtures.js'
+import { listFixtures, readFixtureInput, readFixtureSelect } from '../src/fixtures.js'
 
 test('lists the bundled fixture corpus', () => {
   const fixtures = listFixtures()
@@ -62,5 +62,49 @@ test('throws when an extra fixture collides with an existing family/name pair', 
     assert.throws(() => listFixtures({ extraDirs: [extraDir] }), /duplicate fixture 'olist\/basic'/)
   } finally {
     rmSync(extraDir, { recursive: true, force: true })
+  }
+})
+
+test('readFixtureSelect returns null when there is no .config.json sidecar', () => {
+  const fixture = listFixtures().find((f) => f.family === 'olist' && f.name === 'basic')
+  assert.equal(readFixtureSelect(fixture), null)
+})
+
+test('readFixtureSelect returns null when the sidecar exists but has no select field', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-select-'))
+  const path = join(dir, 'basic.adoc')
+  writeFileSync(path, 'content')
+  writeFileSync(join(dir, 'basic.config.json'), JSON.stringify({}))
+
+  try {
+    assert.equal(readFixtureSelect({ path }), null)
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+test('readFixtureSelect reads a sidecar next to the fixture .adoc file', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-select-'))
+  const path = join(dir, 'basic.adoc')
+  writeFileSync(path, 'content')
+  writeFileSync(join(dir, 'basic.config.json'), JSON.stringify({ select: ['div.slides', 'head style:last-of-type'] }))
+
+  try {
+    assert.deepEqual(readFixtureSelect({ path }), ['div.slides', 'head style:last-of-type'])
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+test('readFixtureSelect throws on a sidecar with a missing/invalid select field', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-select-'))
+  const path = join(dir, 'basic.adoc')
+  writeFileSync(path, 'content')
+  writeFileSync(join(dir, 'basic.config.json'), JSON.stringify({ select: [] }))
+
+  try {
+    assert.throws(() => readFixtureSelect({ path }), /invalid .*basic\.config\.json.*non-empty array/)
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
   }
 })
