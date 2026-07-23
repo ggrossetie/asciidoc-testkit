@@ -1,0 +1,7 @@
+[source]
+.Odelay!
+----
+5.times do
+  print "Odelay!"
+end
+----

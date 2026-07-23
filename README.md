@@ -24,10 +24,43 @@ Same split as `asciidoctor.js`/`asciidoctor`: one JS library, one CLI.
   Ships as a native binary; the npm package exists mainly for JS-based
   extension of the CLI itself.
 
+## Fixture format
+
+The shared corpus lives in [`packages/core/fixtures`](packages/core/fixtures),
+one directory per AsciiDoc construct ("family"), one plain `.adoc` file per
+case:
+
+```
+packages/core/fixtures/
+  olist/
+    basic.adoc
+    with-start.adoc
+    with-title.adoc
+    ...
+  dlist/
+    ...
+```
+
+No comment-delimiter syntax to parse, no per-language quirks — a case is just
+a file. This corpus is backend-agnostic: it only carries AsciiDoc input.
+
+A consuming project (e.g. asciidoctor-reveal.js) supplies its own expected
+output in its own repo, mirroring the same `<family>/<case>` relative path
+with whatever extension fits its backend, e.g.
+`test/fixtures/olist/basic.html`. The runner pairs a case with its expected
+output by that relative path; a case with no matching file in the consumer's
+directory is simply not run, which is how a project scopes the corpus down to
+what's relevant to it, without maintaining a curated subset.
+
+The 244 cases across 37 families currently in the corpus were migrated from
+[asciidoctor-doctest](https://github.com/asciidoctor-contrib/asciidoctor-doctest)'s
+bundled AsciiDoc examples.
+
 ## Status
 
-Early design stage — fixture format and CLI invocation contract are not
-finalized yet.
+Corpus format defined and the initial AsciiDoc input corpus migrated. Still to
+do: the comparator, the JS runner API, and the CLI's external-converter
+invocation contract.
 
 ## License
 

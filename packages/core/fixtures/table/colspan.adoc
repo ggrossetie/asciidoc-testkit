@@ -1,0 +1,7 @@
+|===
+
+| Cell in column 1, row 1 | Cell in column 2, row 1 | Cell in column 3, row 1
+
+2+|Content in a single cell that spans columns 1 and 3 | Cell in column 3, row 1
+
+|===

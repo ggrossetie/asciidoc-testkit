@@ -1,0 +1,13 @@
+// The toc node is used only with toc::[] macro!
+// Actual TOC content is rendered in the outline template, this template
+// usually renders just a "border".
+= Document Title
+:toc: macro
+
+== Introduction
+
+toc::[]
+
+== The Ravages of Writing
+
+=== A Recipe for Potion

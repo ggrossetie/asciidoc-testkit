@@ -1,0 +1,8 @@
+= Document Title
+:toc: macro
+
+== Introduction
+
+toc::[id="mytoc", role="taco"]
+
+== The Ravages of Writing

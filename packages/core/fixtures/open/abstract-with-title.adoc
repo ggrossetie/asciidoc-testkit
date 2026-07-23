@@ -1,0 +1,6 @@
+[abstract]
+.Abstract title is abstract
+--
+This is an abstract quote block.
+Who knows what it really means?
+--

@@ -1,0 +1,2 @@
+:sectlinks:
+== Linked title

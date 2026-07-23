@@ -1,0 +1,2 @@
+.Title of caution
+CAUTION: This is a caution with title.

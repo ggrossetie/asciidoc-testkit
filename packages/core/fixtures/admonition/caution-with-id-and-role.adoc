@@ -1,0 +1,2 @@
+[#caution-1.red]
+CAUTION: This is a caution with id and role.

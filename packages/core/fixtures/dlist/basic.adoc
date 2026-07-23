@@ -1,0 +1,4 @@
+Asciidoctor:: An implementation of the AsciiDoc processor in Ruby.
+Asciidoc::
+  A text document format for writing notes, documentation, articles, books,
+  ebooks, slideshows, web pages, man pages and blogs.

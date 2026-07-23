@@ -1,0 +1,2 @@
+.Title of warning
+WARNING: This is a warning with title.

@@ -1,0 +1,17 @@
+= Document Title
+:toc:
+:numbered:
+
+== Section 1
+
+:numbered!:
+
+== Unnumbered Section
+
+:numbered:
+
+== Section 2
+
+=== Section 2.1
+
+== Section 3

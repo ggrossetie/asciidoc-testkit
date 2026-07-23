@@ -1,0 +1,2 @@
+[#tip-1.blue]
+TIP: This is a tip with id and role.

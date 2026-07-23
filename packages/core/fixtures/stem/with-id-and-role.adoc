@@ -1,0 +1,5 @@
+:stem:
+[stem, id="sqrt", role="right"]
+++++
+sqrt(4) = 2
+++++

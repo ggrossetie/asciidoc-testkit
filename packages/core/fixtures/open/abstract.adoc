@@ -1,0 +1,4 @@
+[abstract]
+--
+This is an abstract quote block.
+--

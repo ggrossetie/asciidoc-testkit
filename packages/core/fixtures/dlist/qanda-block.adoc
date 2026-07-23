@@ -1,0 +1,10 @@
+[qanda]
+What is Asciidoctor?::
+* An implementation of the AsciiDoc processor in Ruby.
+* Fast text processor and publishing toolchain.
+
+Who is behind Asciidoctor?::
+Asciidoctor is lead by Dan Allen and Sarah White and has received contributions
+from many other individuals in Asciidoctor’s awesome community.
++
+AsciiDoc was started by Stuart Rackham.

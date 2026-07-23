@@ -1,0 +1,8 @@
+= Document Title
+:toc: macro
+
+toc::[]
+
+== The Ravages of Writing
+
+=== A Recipe for Potion

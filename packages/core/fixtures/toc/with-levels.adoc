@@ -1,0 +1,10 @@
+= Document Title
+:toc: macro
+
+== Introduction
+
+toc::[levels=1]
+
+== The Ravages of Writing
+
+=== A Recipe for Potion

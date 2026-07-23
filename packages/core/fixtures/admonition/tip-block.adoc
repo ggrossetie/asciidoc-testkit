@@ -1,0 +1,6 @@
+[TIP]
+====
+This is a tip with complex content.
+
+* It contains a list.
+====

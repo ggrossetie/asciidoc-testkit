@@ -1,0 +1,7 @@
+// Subsequent level-0 titles are allowed only for doctype book.
+= Document Title
+:doctype: book
+
+= Part Title
+
+== Section Level 1

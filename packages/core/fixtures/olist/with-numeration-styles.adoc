@@ -1,0 +1,10 @@
+[decimal]
+. level 1
+[upperalpha]
+.. level 2
+[loweralpha]
+... level 3
+[lowerroman]
+.... level 4
+[lowergreek]
+..... level 5

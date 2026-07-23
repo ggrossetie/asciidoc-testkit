@@ -1,0 +1,3 @@
+[verse, id="sandburg", role="center"]
+The fog comes
+on little cat feet.

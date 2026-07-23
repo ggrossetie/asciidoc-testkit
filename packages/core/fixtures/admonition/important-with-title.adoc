@@ -1,0 +1,2 @@
+.Title of important notice
+IMPORTANT: This is an important notice with title.

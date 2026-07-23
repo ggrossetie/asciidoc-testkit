@@ -1,0 +1,5 @@
+:stem: latexmath
+[stem]
+++++
+C = \alpha + \beta Y^{\gamma} + \epsilon
+++++

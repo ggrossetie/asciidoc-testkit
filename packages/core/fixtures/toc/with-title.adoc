@@ -1,0 +1,8 @@
+= Document Title
+:toc: macro
+
+== Introduction
+
+toc::[title="Table of Adventures"]
+
+== The Ravages of Writing

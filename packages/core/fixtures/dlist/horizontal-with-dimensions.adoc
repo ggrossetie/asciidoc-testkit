@@ -1,0 +1,3 @@
+[horizontal, labelwidth="20", itemwidth="50%"]
+Hard drive:: Permanent storage for operating system and/or user files.
+RAM:: Temporarily stores information the CPU uses during operation.

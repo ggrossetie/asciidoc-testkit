@@ -1,0 +1,6 @@
+[source, ruby]
+----
+5.times do
+  print "Odelay!"
+end
+----

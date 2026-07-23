@@ -1,0 +1,6 @@
+[IMPORTANT]
+====
+This is an important notice with complex content.
+
+* It contains a list.
+====

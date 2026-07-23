@@ -1,0 +1,6 @@
+[CAUTION]
+====
+This is a caution with complex content.
+
+* It contains a list.
+====

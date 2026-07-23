@@ -1,0 +1,6 @@
+[WARNING]
+====
+This is a warning with complex content.
+
+* It contains a list.
+====

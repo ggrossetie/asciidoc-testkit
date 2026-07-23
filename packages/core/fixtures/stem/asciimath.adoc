@@ -1,0 +1,5 @@
+:stem: asciimath
+[stem]
+++++
+sqrt(4) = 2
+++++

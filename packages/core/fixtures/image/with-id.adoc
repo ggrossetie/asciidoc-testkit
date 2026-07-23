@@ -1,0 +1,2 @@
+[[img-sunset]]
+image::sunset.jpg[]

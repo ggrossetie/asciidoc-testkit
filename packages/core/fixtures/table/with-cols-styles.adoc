@@ -1,0 +1,9 @@
+[cols="a,e,h,l,m,s"]
+|===
+|image::sunset.jpg[AsciiDoc content]
+|Emphasized text
+|Styled like a header
+|Literal block
+|Monospaced text
+|Strong text
+|===

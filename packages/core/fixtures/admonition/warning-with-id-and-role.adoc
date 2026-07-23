@@ -1,0 +1,2 @@
+[#warning-1.red]
+WARNING: This is a warning with id and role.
