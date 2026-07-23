@@ -8,7 +8,7 @@
 // in a replacement fixtures.js backed by an embedded literal, keeping the
 // real fixtures.js untouched for normal (non-SEA) use.
 
-import { readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
 const FIXTURES_MODULE = /packages[\\/]core[\\/]src[\\/]fixtures\.js$/
@@ -20,6 +20,7 @@ export function inlineFixtures() {
       build.onLoad({ filter: FIXTURES_MODULE }, (args) => {
         const fixturesDir = join(dirname(args.path), '..', 'fixtures')
         const data = {}
+        const config = {}
 
         const families = readdirSync(fixturesDir, { withFileTypes: true })
           .filter((entry) => entry.isDirectory())
@@ -32,12 +33,23 @@ export function inlineFixtures() {
             .filter((f) => f.endsWith('.adoc'))
             .sort()) {
             const name = filename.slice(0, -'.adoc'.length)
-            data[`${family}/${name}`] = readFileSync(join(dir, filename), 'utf8')
+            const key = `${family}/${name}`
+            data[key] = readFileSync(join(dir, filename), 'utf8')
+
+            const configPath = join(dir, `${name}.config.json`)
+            if (!existsSync(configPath)) continue
+            const { select } = JSON.parse(readFileSync(configPath, 'utf8'))
+            if (select === undefined) continue
+            if (!Array.isArray(select) || select.length === 0 || !select.every((s) => typeof s === 'string')) {
+              throw new Error(`invalid ${configPath}: 'select' must be a non-empty array of CSS selector strings`)
+            }
+            config[key] = select
           }
         }
 
         const contents = `
 const DATA = ${JSON.stringify(data)}
+const CONFIG = ${JSON.stringify(config)}
 
 export function fixturesDir () {
   return null
@@ -52,6 +64,11 @@ export function listFixtures () {
 
 export function readFixtureInput ({ path }) {
   return DATA[path]
+}
+
+export function readFixtureSelect ({ path }) {
+  const select = CONFIG[path]
+  return select === undefined ? null : select
 }
 `
         return { contents, loader: 'js' }

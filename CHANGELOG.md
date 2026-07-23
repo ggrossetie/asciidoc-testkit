@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Native binary (SEA) build: fixed a build failure (`No matching export ...
+  for import "readFixtureSelect"`) introduced by the `.config.json` sidecar
+  support — the SEA build's fixture-inlining esbuild plugin now also embeds
+  each fixture's `select` config and implements `readFixtureSelect`, so a
+  fixture's actual output is narrowed to the configured fragment in the
+  native binary the same way it is via the JS API/CLI.
+
 ## [0.1.0] - 2026-07-23
 
 ### Added
