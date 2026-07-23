@@ -1,0 +1,152 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 1.2.3, or 1.2.3-beta.1 for a prerelease), without the leading "v"'
+        required: true
+
+concurrency: release
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: v${{ inputs.version }}
+      npm-tag: ${{ steps.channel.outputs.npm-tag }}
+      prerelease: ${{ steps.channel.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      # Prerelease versions (-alpha, -beta, -rc) publish to the "testing" npm
+      # dist-tag and are marked as a prerelease on the GitHub release, instead
+      # of going out as "latest".
+      - name: Determine release channel
+        id: channel
+        run: |
+          if [[ "${{ inputs.version }}" =~ -(alpha|beta|rc) ]]; then
+            echo "npm-tag=testing" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "npm-tag=latest" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Roll the changelog
+        run: node tasks/changelog.js release ${{ inputs.version }}
+
+      - name: Bump package versions
+        run: |
+          npm version ${{ inputs.version }} --workspace packages/core --no-git-tag-version
+          npm version ${{ inputs.version }} --workspace packages/cli --no-git-tag-version
+          npm pkg set "dependencies.@ggrossetie/asciidoc-testkit-core=${{ inputs.version }}" --workspace packages/cli
+          npm install
+
+      - name: Commit and tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(release): v${{ inputs.version }}"
+          git tag "v${{ inputs.version }}"
+          git push origin HEAD:main
+          git push origin "v${{ inputs.version }}"
+
+      - name: Generate release notes
+        run: node tasks/changelog.js notes ${{ inputs.version }} > release-notes.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release-notes.md
+
+  build:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux-amd64
+          - os: ubuntu-24.04-arm
+            name: linux-arm64
+          - os: macos-15-intel
+            name: macos-amd64
+          - os: macos-latest
+            name: macos-arm64
+          - os: windows-latest
+            name: win-amd64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+      - run: npm ci
+      # SEA cannot cross-compile: this must run once per target platform/arch,
+      # producing the binary for whatever "os" this matrix entry runs on.
+      - run: npm run build:sea --workspace packages/cli
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.name }}
+          path: packages/cli/dist/*
+
+  release:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: binary-*
+          path: dist
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRERELEASE: ${{ needs.prepare.outputs.prerelease }}
+        run: |
+          args=(--title "${{ needs.prepare.outputs.tag }}" --notes-file release-notes.md)
+          if [[ "$PRERELEASE" == "true" ]]; then
+            args+=(--prerelease)
+          fi
+          gh release create "${{ needs.prepare.outputs.tag }}" dist/* "${args[@]}"
+
+  publish-npm:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      # Core first: cli depends on the core version just published.
+      - run: npm publish --workspace packages/core --tag ${{ needs.prepare.outputs.npm-tag }} --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm publish --workspace packages/cli --tag ${{ needs.prepare.outputs.npm-tag }} --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
