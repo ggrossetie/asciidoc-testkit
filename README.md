@@ -56,6 +56,10 @@ The 244 cases across 37 families currently in the corpus were migrated from
 [asciidoctor-doctest](https://github.com/asciidoctor-contrib/asciidoctor-doctest)'s
 bundled AsciiDoc examples.
 
+To see the full list of `<family>/<name>` cases available to implement,
+either call `listFixtures()` from the JS API or run `asciidoc-testkit list`
+from the CLI.
+
 ## Usage (JS API)
 
 ```js

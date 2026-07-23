@@ -9,7 +9,12 @@ CLI (or be wrapped by a small script that behaves like one).
 
 ```
 asciidoc-testkit run --expected <dir> [--extension <ext>] [--timeout <ms>] [--update] -- <command...>
+asciidoc-testkit list
 ```
+
+`list` prints every `<family>/<name>` case in the bundled corpus, one per
+line — use it to see what's available to implement before creating expected
+files under `--expected`.
 
 - `--expected <dir>` (required) — directory holding the caller's own expected
   output, mirroring the corpus layout: `<family>/<name>.<extension>`. Same

@@ -15,6 +15,13 @@ test('reports a usage error without running anything', async () => {
   assert.match(output, /--expected/)
 })
 
+test('list prints every family/name pair in the bundled corpus', async () => {
+  const { exitCode, output } = await main(['list'])
+  assert.equal(exitCode, 0)
+  assert.match(output, /^olist\/basic$/m)
+  assert.ok(output.split('\n').length > 200)
+})
+
 test('runs the corpus over stdin/stdout and reports a mismatch as FAIL', async () => {
   const scratch = scratchDir()
   const expectedDir = join(scratch, 'expected')
