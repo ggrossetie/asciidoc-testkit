@@ -22,12 +22,38 @@ test('parses a full valid invocation', () => {
     extension: 'json',
     timeoutMs: 5000,
     update: false,
+    extraFixturesDirs: [],
     command: ['my-converter', '{input}', '{output}']
   })
 })
 
 test('parses the list subcommand', () => {
-  assert.deepEqual(parseArgs(['list']), { subcommand: 'list' })
+  assert.deepEqual(parseArgs(['list']), { subcommand: 'list', extraFixturesDirs: [] })
+})
+
+test('parses one or more --fixtures for run', () => {
+  const result = parseArgs([
+    'run',
+    '--expected',
+    'test/fixtures',
+    '--fixtures',
+    'extra/one',
+    '--fixtures',
+    'extra/two',
+    '--',
+    'my-converter'
+  ])
+  assert.deepEqual(result.extraFixturesDirs, ['extra/one', 'extra/two'])
+})
+
+test('parses one or more --fixtures for list', () => {
+  const result = parseArgs(['list', '--fixtures', 'extra/one', '--fixtures', 'extra/two'])
+  assert.deepEqual(result, { subcommand: 'list', extraFixturesDirs: ['extra/one', 'extra/two'] })
+})
+
+test('rejects an unknown flag for list', () => {
+  const result = parseArgs(['list', '--nope'])
+  assert.match(result.error, /--nope/)
 })
 
 test('applies default extension, timeout, and update when omitted', () => {

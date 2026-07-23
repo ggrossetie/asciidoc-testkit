@@ -60,6 +60,12 @@ To see the full list of `<family>/<name>` cases available to implement,
 either call `listFixtures()` from the JS API or run `asciidoc-testkit list`
 from the CLI.
 
+A project can also extend the corpus with its own cases, laid out the same
+way (`<family>/<name>.adoc`), for constructs the shared corpus doesn't cover
+(e.g. a backend-specific macro) — see `extraFixturesDirs` below or `--fixtures`
+in the CLI. A family/name pair that collides with the bundled corpus (or
+another extra directory) is an error, not a silent override.
+
 ## Usage (JS API)
 
 ```js
@@ -80,7 +86,9 @@ for (const { family, name, status, diff } of results) {
 for callers that want to run the comparison themselves. Passing `update: true`
 overwrites each matched case's expected file with the converter's current
 output instead of comparing (see `--update` below) — useful for regenerating
-a project's baseline after an intentional output change.
+a project's baseline after an intentional output change. Passing
+`extraFixturesDirs: ['./test/fixtures-extra']` merges in project-supplied
+cases (same `<family>/<name>.adoc` layout) alongside the bundled corpus.
 
 ## Usage (CLI)
 
@@ -96,6 +104,11 @@ asciidoc-testkit run --expected test/fixtures --extension html -- \
 
 # snapshot-testing style: regenerate the expected files instead of comparing
 asciidoc-testkit run --expected test/fixtures --extension html --update -- \
+  bundle exec asciidoctor -b revealjs -o - -
+
+# add project-supplied fixtures (repeatable) alongside the bundled corpus
+asciidoc-testkit run --expected test/fixtures --extension html \
+  --fixtures test/fixtures-extra -- \
   bundle exec asciidoctor -b revealjs -o - -
 ```
 

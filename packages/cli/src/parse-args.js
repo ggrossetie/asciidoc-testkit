@@ -3,18 +3,19 @@ const DEFAULT_TIMEOUT_MS = 10000
 
 export function usage() {
   return (
-    'Usage: asciidoc-testkit run --expected <dir> [--extension <ext>] [--timeout <ms>] [--update] -- <command...>\n' +
-    '       asciidoc-testkit list'
+    'Usage: asciidoc-testkit run --expected <dir> [--extension <ext>] [--timeout <ms>] [--update]\n' +
+    '                            [--fixtures <dir>]... -- <command...>\n' +
+    '       asciidoc-testkit list [--fixtures <dir>]...'
   )
 }
 
 // Parses argv (without the node/script prefix) per the CLI invocation
-// contract. Returns either { subcommand: 'list' },
-// { subcommand: 'run', expectedDir, extension, timeoutMs, update, command },
+// contract. Returns either { subcommand: 'list', extraFixturesDirs },
+// { subcommand: 'run', expectedDir, extension, timeoutMs, update, extraFixturesDirs, command },
 // or { error }.
 export function parseArgs(argv) {
   if (argv[0] === 'list') {
-    return { subcommand: 'list' }
+    return parseListArgs(argv.slice(1))
   }
 
   if (argv[0] !== 'run') {
@@ -37,6 +38,7 @@ export function parseArgs(argv) {
   let extension = DEFAULT_EXTENSION
   let timeoutMs = DEFAULT_TIMEOUT_MS
   let update = false
+  const extraFixturesDirs = []
 
   for (let i = 0; i < flagArgs.length; i++) {
     const flag = flagArgs[i]
@@ -48,6 +50,8 @@ export function parseArgs(argv) {
       timeoutMs = Number(flagArgs[++i])
     } else if (flag === '--update') {
       update = true
+    } else if (flag === '--fixtures') {
+      extraFixturesDirs.push(flagArgs[++i])
     } else {
       return { error: `Unknown option '${flag}'.\n${usage()}` }
     }
@@ -60,5 +64,20 @@ export function parseArgs(argv) {
     return { error: `Invalid --timeout value.\n${usage()}` }
   }
 
-  return { subcommand: 'run', expectedDir, extension, timeoutMs, update, command }
+  return { subcommand: 'run', expectedDir, extension, timeoutMs, update, extraFixturesDirs, command }
+}
+
+function parseListArgs(flagArgs) {
+  const extraFixturesDirs = []
+
+  for (let i = 0; i < flagArgs.length; i++) {
+    const flag = flagArgs[i]
+    if (flag === '--fixtures') {
+      extraFixturesDirs.push(flagArgs[++i])
+    } else {
+      return { error: `Unknown option '${flag}'.\n${usage()}` }
+    }
+  }
+
+  return { subcommand: 'list', extraFixturesDirs }
 }
