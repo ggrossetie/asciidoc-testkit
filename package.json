@@ -6,11 +6,15 @@
   "engines": {
     "node": ">=20"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ggrossetie/asciidoc-testkit.git"
+  },
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "test": "npm test --workspaces --if-present",
+    "test": "node --test test/*.test.js && npm test --workspaces --if-present",
     "lint": "biome check .",
     "format": "biome format --write ."
   },

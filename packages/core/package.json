@@ -1,5 +1,5 @@
 {
-  "name": "@asciidoc/testkit-core",
+  "name": "@ggrossetie/asciidoc-testkit-core",
   "version": "0.0.0",
   "description": "Fixture format, comparator, and JS API to run the asciidoc-testkit corpus in-process against a JavaScript converter.",
   "type": "module",
@@ -7,6 +7,16 @@
   "exports": "./src/index.js",
   "engines": {
     "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ggrossetie/asciidoc-testkit.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/ggrossetie/asciidoc-testkit/tree/main/packages/core#readme",
+  "bugs": "https://github.com/ggrossetie/asciidoc-testkit/issues",
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "test": "node --test test/*.test.js"
