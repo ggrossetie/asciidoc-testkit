@@ -90,10 +90,10 @@ asciidoc-testkit run --expected test/fixtures --extension html -- \
 
 ## Status
 
-Fixture format, corpus, comparator, and JS runner API (`runFixtures`) are in
-place with tests. The CLI's invocation contract is defined (see
-`packages/cli/README.md`) but not implemented yet — still to do: the actual
-process-spawning CLI and the native binary build.
+Fixture format, corpus, comparator, JS runner API (`runFixtures`), and the CLI
+are implemented and tested (25 tests across both packages). Still to do: the
+native binary build (SEA), and trying this end-to-end against a real
+converter (e.g. asciidoctor-reveal.js).
 
 ## License
 
