@@ -73,7 +73,10 @@ for (const { family, name, status, diff } of results) {
 ```
 
 `compare(actual, expected)` and `normalize(text)` are also exported directly,
-for callers that want to run the comparison themselves.
+for callers that want to run the comparison themselves. Passing `update: true`
+overwrites each matched case's expected file with the converter's current
+output instead of comparing (see `--update` below) — useful for regenerating
+a project's baseline after an intentional output change.
 
 ## Usage (CLI)
 
@@ -86,14 +89,24 @@ converter's side.
 ```sh
 asciidoc-testkit run --expected test/fixtures --extension html -- \
   bundle exec asciidoctor -b revealjs -o - -
+
+# snapshot-testing style: regenerate the expected files instead of comparing
+asciidoc-testkit run --expected test/fixtures --extension html --update -- \
+  bundle exec asciidoctor -b revealjs -o - -
 ```
 
 ## Status
 
 Fixture format, corpus, comparator, JS runner API (`runFixtures`), and the CLI
-are implemented and tested (25 tests across both packages). Still to do: the
-native binary build (SEA), and trying this end-to-end against a real
-converter (e.g. asciidoctor-reveal.js).
+(including `--update`) are implemented and tested (31 tests across both
+packages), and validated end-to-end against the real Ruby
+asciidoctor-reveal.js converter. Still to do: the native binary build (SEA).
+
+Deliberately deferred, to keep validated with a real use case before
+generalizing: tolerating cosmetically-different-but-equivalent output
+(attribute order, `style` value formatting, ...) and per-output-format
+fragment extraction. The comparator is already a pluggable option precisely
+so these can be layered on later without a contract change.
 
 ## License
 

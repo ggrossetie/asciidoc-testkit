@@ -12,7 +12,7 @@ export async function main (argv) {
     return { exitCode: 1, output: parsed.error }
   }
 
-  const { expectedDir, extension, timeoutMs, command } = parsed
+  const { expectedDir, extension, timeoutMs, update, command } = parsed
 
   const convert = async (input) => {
     const outcome = await spawnConvert(command, input, { timeoutMs })
@@ -21,6 +21,6 @@ export async function main (argv) {
     return outcome.actual
   }
 
-  const results = await runFixtures({ expectedDir, convert, extension })
+  const results = await runFixtures({ expectedDir, convert, extension, update })
   return { exitCode: exitCodeFor(results), output: formatResults(results) }
 }

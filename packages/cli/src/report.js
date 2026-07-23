@@ -1,4 +1,4 @@
-const STATUSES = ['pass', 'fail', 'error', 'skipped']
+const STATUSES = ['pass', 'fail', 'error', 'updated', 'skipped']
 
 export function formatResults (results) {
   const lines = []
@@ -10,6 +10,8 @@ export function formatResults (results) {
     } else if (r.status === 'error') {
       lines.push(`ERROR ${r.family}/${r.name}`)
       lines.push(indent(r.message))
+    } else if (r.status === 'updated') {
+      lines.push(`UPDATED ${r.family}/${r.name}`)
     }
   }
 
@@ -17,7 +19,7 @@ export function formatResults (results) {
   for (const r of results) counts[r.status]++
 
   lines.push('')
-  lines.push(`${counts.pass} passed, ${counts.fail} failed, ${counts.error} errored, ${counts.skipped} skipped (${results.length} total)`)
+  lines.push(`${counts.pass} passed, ${counts.fail} failed, ${counts.error} errored, ${counts.updated} updated, ${counts.skipped} skipped (${results.length} total)`)
 
   return lines.join('\n')
 }

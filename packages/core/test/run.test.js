@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { runFixtures } from '../src/run.js'
@@ -54,6 +54,31 @@ test('reports a throwing/rejecting converter as "error" instead of aborting the 
     assert.equal(byName.basic.status, 'error')
     assert.equal(byName.basic.message, 'converter crashed')
     assert.equal(byName['with-start'].status, 'pass')
+  } finally {
+    rmSync(expectedDir, { recursive: true, force: true })
+  }
+})
+
+test('update mode overwrites existing expected files with the current actual output, and never adopts skipped cases', async () => {
+  const expectedDir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-'))
+  mkdirSync(join(expectedDir, 'olist'), { recursive: true })
+  writeFileSync(join(expectedDir, 'olist', 'basic.html'), 'stale output from a previous run')
+
+  const convert = () => 'fresh output from the current converter'
+
+  try {
+    const results = await runFixtures({
+      expectedDir,
+      convert,
+      extension: 'html',
+      update: true,
+      filter: (fixture) => fixture.family === 'olist'
+    })
+
+    const byName = Object.fromEntries(results.map((r) => [r.name, r]))
+    assert.equal(byName.basic.status, 'updated')
+    assert.equal(readFileSync(join(expectedDir, 'olist', 'basic.html'), 'utf8'), 'fresh output from the current converter')
+    assert.equal(byName['with-title'].status, 'skipped') // no expected file for it — not created
   } finally {
     rmSync(expectedDir, { recursive: true, force: true })
   }
