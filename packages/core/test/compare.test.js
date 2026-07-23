@@ -24,3 +24,35 @@ test('fails on real content differences and reports a line diff', () => {
 test('normalize trims lines and drops blank lines', () => {
   assert.equal(normalize('  a  \n\n  b  \n'), 'a\nb')
 })
+
+test('passes when the same markup is pretty-printed on one side and minified on the other', () => {
+  const pretty = [
+    '<div class="olist arabic">',
+    '  <ol class="arabic">',
+    '    <li>',
+    '      <p>Step 1</p>',
+    '    </li>',
+    '  </ol>',
+    '</div>'
+  ].join('\n')
+  const minified = '<div class="olist arabic"><ol class="arabic"><li><p>Step 1</p></li></ol></div>'
+
+  assert.equal(compare(minified, pretty).pass, true)
+})
+
+test('does not strip a meaningful same-line space between inline tags', () => {
+  const actual = '<p><em>Hello</em><strong>World</strong></p>'
+  const expected = '<p><em>Hello</em> <strong>World</strong></p>'
+
+  const { pass, diff } = compare(actual, expected)
+  assert.equal(pass, false)
+  assert.match(diff, /<em>Hello<\/em> <strong>World<\/strong>/)
+})
+
+test('preserves deliberate line breaks inside a verse/pre block', () => {
+  const content = '<div class="verseblock"><pre class="content">The fog comes\non little cat feet.</pre></div>'
+  assert.equal(compare(content, content).pass, true)
+
+  const wrongBreak = '<div class="verseblock"><pre class="content">The fog comes on\nlittle cat feet.</pre></div>'
+  assert.equal(compare(wrongBreak, content).pass, false)
+})

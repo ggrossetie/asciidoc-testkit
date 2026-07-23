@@ -1,9 +1,17 @@
-// Line-based comparison, tolerant of indentation: each line is trimmed and
-// blank lines are dropped before comparing, so converters that format their
-// output differently (2-space vs 4-space indent, trailing blank lines, ...)
-// can still match on structure and content.
+// Line-based comparison, tolerant of how a converter chooses to format its
+// markup: multi-line/indented (one element per line, à la a hand-written
+// fixture) and single-line/minified output normalize to the same thing.
+//
+// Only whitespace that spans a newline directly between two tags (`>...\n...<`)
+// is treated as insignificant and dropped — that's pretty-print indentation,
+// never meaningful content. A same-line single space between tags (e.g.
+// `<em>Hello</em> <strong>World</strong>`) is left untouched, since inline
+// HTML gives it visual meaning; so is any whitespace inside a text run, such
+// as the deliberate line breaks in a verse/`<pre>` block.
 export function normalize (text) {
   return text
+    .replace(/>\s*\n\s*</g, '><') // drop insignificant multi-line whitespace between tags
+    .replace(/></g, '>\n<') // one tag per line, for a readable diff
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line.length > 0)
