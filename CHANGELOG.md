@@ -8,14 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Release workflow: changelog automation (`tasks/changelog.js`), native binary
+  builds for macOS (amd64/arm64), Windows (amd64), and Linux (amd64/arm64)
+  attached to the GitHub release, and npm publishing (`testing` dist-tag for
+  `-alpha`/`-beta`/`-rc` prereleases, `latest` otherwise).
 - Biome for linting and formatting (`npm run lint`, `npm run format`).
 - GitHub Actions workflow to lint and run the test suite on pull requests targeting `main`.
 - This changelog.
 - Native binary (SEA) build for the CLI.
 - `--update` flag to regenerate expected fixture output, snapshot-test style.
-- CLI (`@asciidoc/testkit-cli`) implementing the invocation contract: runs the
+- CLI (`asciidoc-testkit-cli`) implementing the invocation contract: runs the
   fixture corpus against any converter invoked as an external command.
-- Comparator and JS runner API (`@asciidoc/testkit-core`), tolerant of
+- Comparator and JS runner API (`asciidoc-testkit-core`), tolerant of
   pretty-printed vs minified HTML.
 - Fixture format and the initial AsciiDoc input corpus.
 
