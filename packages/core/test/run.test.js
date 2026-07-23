@@ -30,3 +30,31 @@ test('runs only fixtures with a matching expected file, and reports pass/fail/sk
     rmSync(expectedDir, { recursive: true, force: true })
   }
 })
+
+test('reports a throwing/rejecting converter as "error" instead of aborting the run', async () => {
+  const expectedDir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-'))
+  mkdirSync(join(expectedDir, 'olist'), { recursive: true })
+  writeFileSync(join(expectedDir, 'olist', 'basic.html'), 'STEP 1')
+  writeFileSync(join(expectedDir, 'olist', 'with-start.html'), 'STEP 1')
+
+  const convert = (_input, { name }) => {
+    if (name === 'basic') throw new Error('converter crashed')
+    return 'STEP 1'
+  }
+
+  try {
+    const results = await runFixtures({
+      expectedDir,
+      convert,
+      extension: 'html',
+      filter: (fixture) => fixture.family === 'olist'
+    })
+
+    const byName = Object.fromEntries(results.map((r) => [r.name, r]))
+    assert.equal(byName.basic.status, 'error')
+    assert.equal(byName.basic.message, 'converter crashed')
+    assert.equal(byName['with-start'].status, 'pass')
+  } finally {
+    rmSync(expectedDir, { recursive: true, force: true })
+  }
+})

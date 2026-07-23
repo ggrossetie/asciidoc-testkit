@@ -12,5 +12,8 @@
   "dependencies": {
     "@asciidoc/testkit-core": "0.0.0"
   },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
   "license": "MIT"
 }

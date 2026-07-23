@@ -10,7 +10,10 @@ import { compare as defaultCompare } from './compare.js'
 //   file there is reported as "skipped" rather than run — this is how a
 //   project scopes the shared corpus down to what's relevant to it.
 // - convert(input, fixture): converts a fixture's AsciiDoc input to the
-//   caller's output format. May return a string or a Promise<string>.
+//   caller's output format. May return a string or a Promise<string>, or
+//   throw/reject — that case is reported with status "error" (e.g. the
+//   converter crashed or an external process exited non-zero) rather than
+//   aborting the whole run.
 // - extension: expected output file extension (without the dot), default 'html'.
 // - compare(actual, expected): defaults to the bundled line-based comparator.
 // - filter(fixture): optional predicate to restrict which fixtures run.
@@ -22,16 +25,23 @@ export async function runFixtures ({ expectedDir, convert, extension = 'html', c
 
     const expectedPath = join(expectedDir, fixture.family, `${fixture.name}.${extension}`)
     if (!existsSync(expectedPath)) {
-      results.push({ ...fixture, status: 'skipped', diff: null })
+      results.push({ ...fixture, status: 'skipped', diff: null, message: null })
       continue
     }
 
     const input = readFixtureInput(fixture)
     const expected = readFileSync(expectedPath, 'utf8')
-    const actual = await convert(input, fixture)
-    const { pass, diff } = compare(actual, expected)
 
-    results.push({ ...fixture, status: pass ? 'pass' : 'fail', diff })
+    let actual
+    try {
+      actual = await convert(input, fixture)
+    } catch (err) {
+      results.push({ ...fixture, status: 'error', diff: null, message: err.message })
+      continue
+    }
+
+    const { pass, diff } = compare(actual, expected)
+    results.push({ ...fixture, status: pass ? 'pass' : 'fail', diff, message: null })
   }
 
   return results

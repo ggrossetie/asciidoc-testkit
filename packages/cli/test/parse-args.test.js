@@ -1,0 +1,49 @@
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+import { parseArgs } from '../src/parse-args.js'
+
+test('parses a full valid invocation', () => {
+  const result = parseArgs(['run', '--expected', 'test/fixtures', '--extension', 'json', '--timeout', '5000', '--', 'my-converter', '{input}', '{output}'])
+  assert.deepEqual(result, {
+    expectedDir: 'test/fixtures',
+    extension: 'json',
+    timeoutMs: 5000,
+    command: ['my-converter', '{input}', '{output}']
+  })
+})
+
+test('applies default extension and timeout when omitted', () => {
+  const result = parseArgs(['run', '--expected', 'test/fixtures', '--', 'my-converter'])
+  assert.equal(result.extension, 'html')
+  assert.equal(result.timeoutMs, 10000)
+})
+
+test('rejects a missing or unknown subcommand', () => {
+  assert.ok(parseArgs([]).error)
+  assert.ok(parseArgs(['bogus']).error)
+})
+
+test('rejects a missing --', () => {
+  const result = parseArgs(['run', '--expected', 'test/fixtures'])
+  assert.match(result.error, /--/)
+})
+
+test('rejects an empty command after --', () => {
+  const result = parseArgs(['run', '--expected', 'test/fixtures', '--'])
+  assert.ok(result.error)
+})
+
+test('rejects a missing --expected', () => {
+  const result = parseArgs(['run', '--', 'my-converter'])
+  assert.match(result.error, /--expected/)
+})
+
+test('rejects an invalid --timeout', () => {
+  const result = parseArgs(['run', '--expected', 'test/fixtures', '--timeout', 'soon', '--', 'my-converter'])
+  assert.match(result.error, /--timeout/)
+})
+
+test('rejects an unknown flag', () => {
+  const result = parseArgs(['run', '--nope', 'x', '--', 'my-converter'])
+  assert.match(result.error, /--nope/)
+})
