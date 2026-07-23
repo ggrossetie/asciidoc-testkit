@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Release workflow: bumped `actions/upload-artifact` (v4 → v7) and
+  `actions/download-artifact` (v4 → v8), clearing a Node.js 20 deprecation
+  warning on the runners.
+
 ## [0.1.1] - 2026-07-23
 
 ### Fixed
