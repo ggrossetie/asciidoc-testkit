@@ -95,12 +95,16 @@ asciidoc-testkit run --expected test/fixtures --extension html --update -- \
   bundle exec asciidoctor -b revealjs -o - -
 ```
 
+`npm run build:sea` (from `packages/cli`) produces a standalone native binary
+with the fixture corpus baked in — no Node.js needed on the machine that runs
+it. See [`packages/cli/README.md`](packages/cli/README.md#native-binary).
+
 ## Status
 
-Fixture format, corpus, comparator, JS runner API (`runFixtures`), and the CLI
-(including `--update`) are implemented and tested (31 tests across both
-packages), and validated end-to-end against the real Ruby
-asciidoctor-reveal.js converter. Still to do: the native binary build (SEA).
+Fixture format, corpus, comparator, JS runner API (`runFixtures`), the CLI
+(including `--update`), and the native binary build (SEA) are implemented and
+tested (31 tests across both packages), and validated end-to-end against the
+real Ruby asciidoctor-reveal.js converter.
 
 Deliberately deferred, to keep validated with a real use case before
 generalizing: tolerating cosmetically-different-but-equivalent output

@@ -81,6 +81,19 @@ stderr for the first two), then a summary (`N passed, N failed, N errored,
 N updated, N skipped`). It exits `0` only if there were zero `fail` and zero
 `error` cases — `skipped` and `updated` cases do not affect the exit code.
 
+## Native binary
+
+`npm run build:sea` produces a standalone executable for the host platform at
+`dist/asciidoc-testkit-<platform>-<arch>` — a [Node.js Single Executable
+Application](https://nodejs.org/api/single-executable-applications.html), so
+it runs with no Node.js or npm install required on the machine that uses it
+(that's the point: a Ruby/Rust/Java project shells out to this binary, not to
+`node`). The fixture corpus is inlined into the binary at build time (see
+`tasks/sea/inline-fixtures-plugin.js`); the produced binary carries no
+dependency on this repo's files. SEA cannot cross-compile, so building
+binaries for other platforms means running the build on one machine per
+target (linux x64, linux arm64, macOS arm64, win x64).
+
 ## Non-goals (for now)
 
 - No per-case converter flags/attributes — the same command runs for every
