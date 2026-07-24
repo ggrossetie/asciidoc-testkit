@@ -120,6 +120,54 @@ test('update mode overwrites existing expected files with the current actual out
   }
 })
 
+test('an ignored fixture is reported "ignored" with its reason, and never reaches convert()', async () => {
+  const expectedDir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-'))
+  mkdirSync(join(expectedDir, 'listing'), { recursive: true })
+  writeFileSync(join(expectedDir, 'listing', 'source-with-language.html'), 'whatever')
+
+  let convertCalls = 0
+  const convert = () => {
+    convertCalls++
+    return 'whatever'
+  }
+
+  try {
+    const results = await runFixtures({
+      expectedDir,
+      convert,
+      extension: 'html',
+      filter: (fixture) => fixture.family === 'listing',
+      ignore: [{ pattern: 'listing/source-with-language', reason: 'no JS syntax highlighter' }]
+    })
+
+    const byName = Object.fromEntries(results.map((r) => [r.name, r]))
+    assert.equal(byName['source-with-language'].status, 'ignored')
+    assert.equal(byName['source-with-language'].message, 'no JS syntax highlighter')
+    assert.equal(convertCalls, 0, 'convert() should not run for an ignored fixture')
+  } finally {
+    rmSync(expectedDir, { recursive: true, force: true })
+  }
+})
+
+test('ignore takes precedence over a missing expected file — still reported "ignored", not "skipped"', async () => {
+  const expectedDir = mkdtempSync(join(tmpdir(), 'asciidoc-testkit-'))
+
+  try {
+    const results = await runFixtures({
+      expectedDir,
+      convert: () => 'whatever',
+      extension: 'html',
+      filter: (fixture) => fixture.family === 'listing' && fixture.name === 'source-with-language',
+      ignore: [{ pattern: 'listing/source-with-language' }]
+    })
+
+    assert.equal(results[0].status, 'ignored')
+    assert.equal(results[0].message, null)
+  } finally {
+    rmSync(expectedDir, { recursive: true, force: true })
+  }
+})
+
 test('a fixture with a .config.json sidecar has its actual output narrowed to the selected fragment before compare/update', async () => {
   const fixture = listFixtures().find((f) => f.family === 'olist' && f.name === 'basic')
   const selectPath = fixture.path.replace(/\.adoc$/, '.config.json')

@@ -119,6 +119,12 @@ a project's baseline after an intentional output change. Passing
 `extraFixturesDirs: ['./test/fixtures-extra']` merges in project-supplied
 cases (same `<family>/<name>.adoc` layout) alongside the bundled corpus.
 
+Passing `ignore: [{ pattern: 'listing/source-with-language', reason: 'no JS syntax highlighter' }]`
+skips matching cases for a known implementation gap (see `--ignore` below) —
+reported with status `ignored` instead of being run, and never reaching
+`convert`. `pattern` is `<family>/<name>`; `name` may contain a `*` wildcard,
+so `{ pattern: 'listing/*' }` ignores a whole family. `reason` is optional.
+
 ## Usage (CLI)
 
 The CLI spawns the converter under test as an external process, once per
@@ -139,6 +145,11 @@ asciidoc-testkit run --expected test/fixtures --extension html --update -- \
 asciidoc-testkit run --expected test/fixtures --extension html \
   --fixtures test/fixtures-extra -- \
   bundle exec asciidoctor -b revealjs -o - -
+
+# ignore a case for a known implementation gap (repeatable, reason optional)
+asciidoc-testkit run --expected test/fixtures --extension html \
+  --ignore "listing/source-with-language:no JS syntax highlighter (Rouge/CodeRay)" -- \
+  bundle exec asciidoctor -b revealjs -o - -
 ```
 
 `npm run build:sea` (from `packages/cli`) produces a standalone native binary
@@ -148,9 +159,9 @@ it. See [`packages/cli/README.md`](packages/cli/README.md#native-binary).
 ## Status
 
 Fixture format, corpus, comparator, JS runner API (`runFixtures`), the CLI
-(including `--update`), and the native binary build (SEA) are implemented and
-tested (31 tests across both packages), and validated end-to-end against the
-real Ruby asciidoctor-reveal.js converter.
+(including `--update` and `--ignore`), and the native binary build (SEA) are
+implemented and tested, and validated end-to-end against the real Ruby
+asciidoctor-reveal.js converter.
 
 HTML fragment extraction (the `.config.json` sidecar, see above) is also
 implemented. Deliberately deferred, to keep validated with a real use case

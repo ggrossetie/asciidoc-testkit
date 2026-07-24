@@ -23,6 +23,7 @@ test('parses a full valid invocation', () => {
     timeoutMs: 5000,
     update: false,
     extraFixturesDirs: [],
+    ignore: [],
     command: ['my-converter', '{input}', '{output}']
   })
 })
@@ -96,4 +97,40 @@ test('rejects an invalid --timeout', () => {
 test('rejects an unknown flag', () => {
   const result = parseArgs(['run', '--nope', 'x', '--', 'my-converter'])
   assert.match(result.error, /--nope/)
+})
+
+test('parses one or more --ignore, with and without a reason', () => {
+  const result = parseArgs([
+    'run',
+    '--expected',
+    'test/fixtures',
+    '--ignore',
+    'listing/source-with-language:no JS syntax highlighter',
+    '--ignore',
+    'listing/source-*',
+    '--',
+    'my-converter'
+  ])
+  assert.deepEqual(result.ignore, [
+    { pattern: 'listing/source-with-language', reason: 'no JS syntax highlighter' },
+    { pattern: 'listing/source-*' }
+  ])
+})
+
+test('a --ignore reason may itself contain a colon', () => {
+  const result = parseArgs([
+    'run',
+    '--expected',
+    'test/fixtures',
+    '--ignore',
+    'listing/source-with-language:known gap: no JS highlighter',
+    '--',
+    'my-converter'
+  ])
+  assert.deepEqual(result.ignore, [{ pattern: 'listing/source-with-language', reason: 'known gap: no JS highlighter' }])
+})
+
+test('rejects an --ignore value with no family/name separator', () => {
+  const result = parseArgs(['run', '--expected', 'test/fixtures', '--ignore', 'no-slash-here', '--', 'my-converter'])
+  assert.match(result.error, /--ignore/)
 })

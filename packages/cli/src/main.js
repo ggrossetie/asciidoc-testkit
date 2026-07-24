@@ -20,7 +20,7 @@ export async function main(argv) {
       return { exitCode: 0, output }
     }
 
-    const { expectedDir, extension, timeoutMs, update, extraFixturesDirs, command } = parsed
+    const { expectedDir, extension, timeoutMs, update, extraFixturesDirs, ignore, command } = parsed
 
     const convert = async (input, fixture) => {
       const outcome = await spawnConvert(command, input, { timeoutMs, sourcePath: fixture.path })
@@ -30,7 +30,7 @@ export async function main(argv) {
       return outcome.actual
     }
 
-    const results = await runFixtures({ expectedDir, convert, extension, update, extraFixturesDirs })
+    const results = await runFixtures({ expectedDir, convert, extension, update, extraFixturesDirs, ignore })
     return { exitCode: exitCodeFor(results), output: formatResults(results) }
   } catch (err) {
     return { exitCode: 1, output: err.message }

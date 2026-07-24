@@ -1,4 +1,4 @@
-const STATUSES = ['pass', 'fail', 'error', 'updated', 'skipped']
+const STATUSES = ['pass', 'fail', 'error', 'updated', 'skipped', 'ignored']
 
 export function formatResults(results) {
   const lines = []
@@ -12,6 +12,8 @@ export function formatResults(results) {
       lines.push(indent(r.message))
     } else if (r.status === 'updated') {
       lines.push(`UPDATED ${r.family}/${r.name}`)
+    } else if (r.status === 'ignored') {
+      lines.push(`IGNORED ${r.family}/${r.name}${r.message ? ` — ${r.message}` : ''}`)
     }
   }
 
@@ -20,7 +22,8 @@ export function formatResults(results) {
 
   lines.push('')
   lines.push(
-    `${counts.pass} passed, ${counts.fail} failed, ${counts.error} errored, ${counts.updated} updated, ${counts.skipped} skipped (${results.length} total)`
+    `${counts.pass} passed, ${counts.fail} failed, ${counts.error} errored, ${counts.updated} updated, ` +
+      `${counts.skipped} skipped, ${counts.ignored} ignored (${results.length} total)`
   )
 
   return lines.join('\n')
