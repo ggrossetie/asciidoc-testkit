@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   precedence over the `--expected` lookup, so it also applies to cases with
   an existing expected file. Does not affect exit code.
 
+### Changed
+
+- Release workflow: the Actions run is now named "Release v\<version\>"
+  (via `run-name`) instead of the default run name, so a release run is
+  identifiable in the Actions run list without opening it.
+
 ## [0.1.2] - 2026-07-23
 
 ### Fixed
