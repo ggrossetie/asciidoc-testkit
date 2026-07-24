@@ -188,6 +188,51 @@ test("{input} resolves to the fixture's own file, so a converter can find siblin
   }
 })
 
+test('--ignore reports a matched case as IGNORED with its reason, and does not spawn the converter for it', async () => {
+  const scratch = scratchDir()
+  const expectedDir = join(scratch, 'expected')
+  mkdirSync(join(expectedDir, 'listing'), { recursive: true })
+  writeFileSync(join(expectedDir, 'listing', 'source-with-language.html'), 'irrelevant, this case is ignored')
+
+  const script = join(scratch, 'boom.mjs')
+  writeFileSync(script, "process.stderr.write('should never run'); process.exit(1)")
+
+  try {
+    const { exitCode, output } = await main([
+      'run',
+      '--expected',
+      expectedDir,
+      '--extension',
+      'html',
+      '--ignore',
+      'listing/source-with-language:no JS syntax highlighter',
+      '--',
+      process.execPath,
+      script
+    ])
+
+    assert.equal(exitCode, 0)
+    assert.match(output, /IGNORED listing\/source-with-language — no JS syntax highlighter/)
+    assert.match(output, /0 passed, 0 failed, 0 errored, 0 updated, \d+ skipped, 1 ignored/)
+  } finally {
+    rmSync(scratch, { recursive: true, force: true })
+  }
+})
+
+test('rejects an --ignore value with no family/name separator', async () => {
+  const { exitCode, output } = await main([
+    'run',
+    '--expected',
+    'test/fixtures',
+    '--ignore',
+    'no-slash-here',
+    '--',
+    'my-converter'
+  ])
+  assert.equal(exitCode, 1)
+  assert.match(output, /--ignore/)
+})
+
 test('reports a non-zero-exit converter as ERROR', async () => {
   const scratch = scratchDir()
   const expectedDir = join(scratch, 'expected')

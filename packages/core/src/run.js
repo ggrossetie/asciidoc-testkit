@@ -2,6 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { compare as defaultCompare } from './compare.js'
 import { listFixtures, readFixtureInput, readFixtureSelect } from './fixtures.js'
+import { findIgnoreReason } from './ignore.js'
 import { extractFragment } from './select.js'
 
 // Runs the bundled fixture corpus against a caller-supplied converter.
@@ -29,6 +30,12 @@ import { extractFragment } from './select.js'
 //   have (e.g. a backend-specific macro) without forking this package. A
 //   family/name pair that collides with the bundled corpus or another extra
 //   dir throws rather than silently overriding.
+// - ignore: array of { pattern, reason } entries for cases with a known
+//   implementation gap (e.g. a JS converter with no equivalent of a
+//   Ruby-only syntax highlighter). A matched fixture is reported "ignored"
+//   (carrying its reason) and never reaches convert() — checked before the
+//   expectedDir lookup, so it takes precedence even when an expected file
+//   exists. See ignore.js for the pattern syntax.
 //
 // A fixture with a <name>.config.json sidecar has its actual output narrowed
 // to the matched CSS selector fragment before either the compare or update
@@ -40,12 +47,19 @@ export async function runFixtures({
   compare = defaultCompare,
   filter,
   update = false,
-  extraFixturesDirs = []
+  extraFixturesDirs = [],
+  ignore = []
 }) {
   const results = []
 
   for (const fixture of listFixtures({ extraDirs: extraFixturesDirs })) {
     if (filter && !filter(fixture)) continue
+
+    const ignoreReason = findIgnoreReason(fixture, ignore)
+    if (ignoreReason !== undefined) {
+      results.push({ ...fixture, status: 'ignored', diff: null, message: ignoreReason })
+      continue
+    }
 
     const expectedPath = join(expectedDir, fixture.family, `${fixture.name}.${extension}`)
     if (!existsSync(expectedPath)) {

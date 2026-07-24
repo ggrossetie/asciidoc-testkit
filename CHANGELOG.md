@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- CLI: new repeatable `--ignore <family/name>[:<reason>]` option (also
+  available as `ignore` in the JS `runFixtures` API) to skip a fixture case
+  for a known implementation gap on the converter under test — e.g. a JS
+  converter with no equivalent of a Ruby-only syntax highlighter like Rouge
+  or CodeRay. `name` may contain a `*` wildcard to ignore a whole family
+  (`--ignore listing/*`). A matched case is reported `ignored`, carrying its
+  optional reason, instead of being spawned and compared — this takes
+  precedence over the `--expected` lookup, so it also applies to cases with
+  an existing expected file. Does not affect exit code.
+
 ## [0.1.2] - 2026-07-23
 
 ### Fixed
